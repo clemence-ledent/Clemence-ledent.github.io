@@ -5,28 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Clémence Ledent</title>
     <style>
+        /* All CSS must stay inside these style tags */
         body { 
             margin: 0; 
             background: #fff; 
             min-height: 100vh; 
             font-family: sans-serif; 
             overflow-y: auto; 
-            display: flex; /* Creates the invisible column structure */
+            display: flex;
         }
 
-        /* The Left/Center Column for Content */
+        /* The Left/Center Column - now 75% */
         #content-wrapper {
-            flex: 0 0 65%; /* Takes up 65% of the screen width */
+            flex: 0 0 75%; 
             display: flex;
             flex-direction: column;
-            align-items: center; /* Centers images within the left column */
-            padding: 60px 0;
+            align-items: center; 
+            padding: 80px 0;
             z-index: 1;
         }
 
-        /* The Right Column for Navigation (Invisible) */
+        /* The Right Column Area - now 25% */
         #nav-zone {
-            flex: 0 0 35%; /* The "Safe Zone" for dots */
+            flex: 0 0 25%; 
             position: relative;
         }
 
@@ -39,28 +40,34 @@
             box-sizing: border-box;
             cursor: pointer;
             transition: background 0.3s, border-color 0.3s;
-            position: fixed; /* Keeps dots on screen while scrolling */
+            position: fixed; 
             z-index: 100;
         }
 
+        /* Keeps the original entry dot in the upper right */
         #entry-dot {
             top: 15%;
-            right: 5%; /* Adjusted slightly for the new column */
+            right: 5%;
         }
 
         .dot.active {
-            background: rgb(0, 0, 255);
-            border-color: rgb(0, 0, 255);
+            background: rgb(0, 0, 255) !important;
+            border-color: rgb(0, 0, 255) !important;
         }
 
         .composition-img {
             max-height: 85vh; 
-            max-width: 90%; /* Images fill most of their column but stay safe */
+            max-width: 90%; 
             height: auto;
             width: auto;
             margin-bottom: 100px;
             display: block;
             object-fit: contain;
+        }
+
+        h2 {
+            font-weight: normal;
+            color: #000;
         }
     </style>
 </head>
@@ -92,21 +99,23 @@
             const dot = document.createElement('div');
             dot.className = 'dot';
             
-            // MATH FOR THE RIGHT COLUMN ONLY:
-            // Dots start at 65% of window width and end at 95%
-            const minX = window.innerWidth * 0.65; 
+            // MATH FOR THE RIGHT 25% COLUMN:
+            // Dots will start at 75% of window width and go up to 95%
+            const minX = window.innerWidth * 0.75; 
             const maxX = window.innerWidth * 0.95;
             const randomX = minX + Math.random() * (maxX - minX);
             
-            // Randomly scatter vertically
             const randomY = Math.random() * (window.innerHeight - 60);
             
             dot.style.left = randomX + 'px';
             dot.style.top = randomY + 'px';
 
             dot.onclick = () => {
+                // Remove blue from all dots
                 document.querySelectorAll('.dot').forEach(d => d.classList.remove('active'));
+                // Add blue to clicked dot
                 dot.classList.add('active');
+                
                 display.innerHTML = '';
 
                 if (tabName === 'Compositions') {
@@ -118,7 +127,7 @@
                         display.appendChild(img);
                     });
                 } else {
-                    display.innerHTML = `<h2 style="font-weight: normal; color: #333;">${tabName}</h2>`;
+                    display.innerHTML = `<h2>${tabName}</h2>`;
                 }
             };
 
