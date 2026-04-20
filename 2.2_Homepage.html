@@ -12,7 +12,7 @@
             font-family: sans-serif; 
             overflow-y: auto; 
             display: flex;
-            overflow-x: hidden; /* Prevents accidental horizontal scroll */
+            overflow-x: hidden;
         }
 
         /* 75% Content Column */
@@ -20,10 +20,17 @@
             flex: 0 0 75%; 
             display: flex;
             flex-direction: column;
-            align-items: center; /* Horizontally centers the images */
-            justify-content: flex-start; /* Starts images from the top */
+            align-items: center; /* This centers the children horizontally */
             padding: 80px 0;
             z-index: 1;
+        }
+
+        /* Inner container to hold the images */
+        #content-display {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         /* 25% Navigation Column */
@@ -57,10 +64,10 @@
 
         .composition-img {
             max-height: 85vh; 
-            max-width: 90%; 
+            max-width: 85%; /* Slightly smaller to ensure breathing room */
             height: auto;
             width: auto;
-            margin-bottom: 120px; /* Increased margin for more breathing room */
+            margin-bottom: 120px; 
             display: block;
             object-fit: contain;
         }
@@ -68,7 +75,6 @@
         h2 {
             font-weight: normal;
             color: #000;
-            margin-top: 0;
         }
     </style>
 </head>
@@ -85,29 +91,27 @@
 
     <script>
         const tabs = ['Works', 'Contact', 'Text', 'Compositions'];
+        // Updated Image list
         const compositionImages = [
-            "https://raw.githubusercontent.com/clemence-ledent/cl-mence-items/compositions/collage-1.jpg",
-            "https://raw.githubusercontent.com/clemence-ledent/cl-mence-items/compositions/collage-2.jpg",
-            "https://raw.githubusercontent.com/clemence-ledent/cl-mence-items/compositions/collage-3.jpg",
-            "https://raw.githubusercontent.com/clemence-ledent/cl-mence-items/compositions/collage-4.jpg",
-            "https://raw.githubusercontent.com/clemence-ledent/cl-mence-items/compositions/collage-5.png"
+            "https://raw.githubusercontent.com/clemence-ledent/cl-mence-items/Compositions/collage-1.jpg",
+            "https://raw.githubusercontent.com/clemence-ledent/cl-mence-items/Compositions/collage-2.jpg",
+            "https://raw.githubusercontent.com/clemence-ledent/cl-mence-items/Compositions/collage-3.jpg",
+            "https://raw.githubusercontent.com/clemence-ledent/cl-mence-items/Compositions/collage-4.jpg",
+            "https://raw.githubusercontent.com/clemence-ledent/cl-mence-items/Compositions/collage-5.png"
         ];
 
         const container = document.getElementById('tab-dots');
         const display = document.getElementById('content-display');
 
-        // Function to handle dot placement on load and resize
         function placeDots() {
-            container.innerHTML = ''; // Clear existing dots
+            container.innerHTML = ''; 
             tabs.forEach(tabName => {
                 const dot = document.createElement('div');
                 dot.className = 'dot';
                 
-                // Scatter logic strictly within the right 25%
                 const minX = window.innerWidth * 0.75; 
-                const maxX = window.innerWidth - 40; // 40px buffer for dot width
+                const maxX = window.innerWidth - 45; 
                 const randomX = minX + Math.random() * (maxX - minX);
-                
                 const randomY = 40 + Math.random() * (window.innerHeight - 80);
                 
                 dot.style.left = randomX + 'px';
@@ -134,10 +138,7 @@
             });
         }
 
-        // Initialize dots
         placeDots();
-
-        // Re-scatter dots if window is resized to keep them in the 25% zone
         window.onresize = placeDots;
     </script>
 </body>
