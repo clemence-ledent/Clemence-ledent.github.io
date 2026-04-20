@@ -1,60 +1,140 @@
+```html name=2.2_Homepage.html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Homepage</title>
+    <title>Clémence Ledent</title>
     <style>
-        body {
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            position: relative;
+        body { 
+            margin: 0; 
+            background: #fff; 
+            min-height: 100vh; 
+            font-family: sans-serif; 
             overflow: hidden;
+            position: relative;
         }
-        .tab-dot {
-            position: absolute;
+
+        .dot {
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
-            background-color: #000;
+            background: #000;
+            border: 1.8px solid #000;
+            box-sizing: border-box;
+            display: inline-block;
+            cursor: pointer;
+            transition: background 0.3s, border-color 0.3s;
+            position: fixed;
+            z-index: 100;
         }
-        img {
+
+        #entry-dot {
+            top: 15%;
+            right: 10%;
+        }
+
+        .dot.active {
+            background: rgb(0, 0, 255);
+            border-color: rgb(0, 0, 255);
+        }
+
+        /* Container for the images */
+        #content-display {
             width: 100%;
             height: 100vh;
-            object-fit: cover;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow-y: auto;
+        }
+
+        .composition-img {
+            max-width: 100%;
+            max-height: 100vh;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            display: block;
         }
     </style>
 </head>
 <body>
-    <img src="your-image-source.jpg" alt="Homepage Image">
-    <script>
-        const tabDots = [];
-        const dotCount = 20; // Number of dots
-        const containerSize = window.innerWidth; // Width of the viewport
-        const avoidAreaRadius = 150; // Radius of the area to avoid in the center
-        const centerX = containerSize / 2;
-        const centerY = window.innerHeight / 2;
 
-        function scatterDots() {
-            for (let i = 0; i < dotCount; i++) {
-                const dot = document.createElement('div');
-                dot.className = 'tab-dot';
-                const x = Math.random() * containerSize;
-                const y = Math.random() * window.innerHeight;
-                // Check if dot is in the avoided area
-                if (Math.sqrt(Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2)) > avoidAreaRadius) {
-                    dot.style.width = '10px';
-                    dot.style.height = '10px';
-                    dot.style.left = x + 'px';
-                    dot.style.top = y + 'px';
-                    document.body.appendChild(dot);
-                    tabDots.push(dot);
-                }
+    <div id="entry-dot" class="dot"></div>
+    <div id="tab-dots"></div>
+
+    <div id="content-display">
+        </div>
+
+    <script>
+        const tabs = ['Works', 'Contact', 'Text', 'Compositions'];
+        const compositionImages = [
+            "https://raw.githubusercontent.com/clemence-ledent/cl-mence-items/main/collage-1.jpg",
+            "https://raw.githubusercontent.com/clemence-ledent/cl-mence-items/main/collage-2.jpg",
+            "https://raw.githubusercontent.com/clemence-ledent/cl-mence-items/main/collage-3.jpg",
+            "https://raw.githubusercontent.com/clemence-ledent/cl-mence-items/main/collage-4.jpg",
+            "https://raw.githubusercontent.com/clemence-ledent/cl-mence-items/main/collage-5.jpg"
+        ];
+
+        function getRandomPosition() {
+            const centerMinX = window.innerWidth * 0.3;
+            const centerMaxX = window.innerWidth * 0.7;
+            const centerMinY = window.innerHeight * 0.3;
+            const centerMaxY = window.innerHeight * 0.7;
+
+            let randomX, randomY;
+            let inCenter = true;
+
+            // Keep generating until we get a position outside the center area
+            while (inCenter) {
+                randomX = Math.random() * (window.innerWidth - 60);
+                randomY = Math.random() * (window.innerHeight - 60);
+                
+                inCenter = (randomX > centerMinX && randomX < centerMaxX) && 
+                          (randomY > centerMinY && randomY < centerMaxY);
             }
+
+            return { x: randomX, y: randomY };
         }
 
-        scatterDots();
+        const container = document.getElementById('tab-dots');
+        const display = document.getElementById('content-display');
+
+        tabs.forEach(tabName => {
+            const dot = document.createElement('div');
+            dot.className = 'dot';
+            
+            // Random scatter avoiding center
+            const position = getRandomPosition();
+            dot.style.left = position.x + 'px';
+            dot.style.top = position.y + 'px';
+
+            dot.onclick = () => {
+                document.querySelectorAll('.dot').forEach(d => d.classList.remove('active'));
+                dot.classList.add('active');
+                
+                // Clear current content
+                display.innerHTML = '';
+
+                if (tabName === 'Compositions') {
+                    compositionImages.forEach(src => {
+                        const img = document.createElement('img');
+                        img.src = src;
+                        img.className = 'composition-img';
+                        img.alt = "collage";
+                        display.appendChild(img);
+                    });
+                } else {
+                    // Placeholder for other tabs
+                    display.innerHTML = `<h2>${tabName}</h2>`;
+                }
+            };
+
+            container.appendChild(dot);
+        });
     </script>
 </body>
 </html>
+```
