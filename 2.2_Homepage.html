@@ -3,114 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clémence Ledent</title>
+    <title>Homepage</title>
     <style>
-        body { 
-            margin: 0; 
-            background: #fff; 
-            min-height: 100vh; 
-            font-family: sans-serif; 
-            /* allow scrolling if content is long */
-            overflow-y: auto; 
-            position: relative;
-        }
-
-        .dot {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: #000;
-            border: 1.8px solid #000;
-            box-sizing: border-box;
-            display: inline-block;
-            cursor: pointer;
-            transition: background 0.3s, border-color 0.3s;
-            position: fixed; /* Keep dots fixed so they stay while scrolling content */
-            z-index: 100;
-        }
-
-        #entry-dot {
-            top: 15%;
-            right: 10%;
-        }
-
-        .dot.active {
-            background: rgb(0, 0, 255);
-            border-color: rgb(0, 0, 255);
-        }
-
-        /* Container for the scrollable images */
-        #content-display {
-            padding: 120px 20px 60px 20px; /* Space for dots at the top */
-            max-width: 800px;
-            margin: 0 auto;
+        body {
+            margin: 0;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
         }
-
-        .composition-img {
-            max-width: 100%;
-            height: auto;
-            margin-bottom: 80px; /* Large margin between images */
-            display: block;
+        .tab-dot {
+            position: absolute;
+            border-radius: 50%;
+            background-color: #000;
+        }
+        img {
+            width: 100%;
+            height: 100vh;
+            object-fit: cover;
         }
     </style>
 </head>
 <body>
-
-    <div id="entry-dot" class="dot"></div>
-    <div id="tab-dots"></div>
-
-    <div id="content-display">
-        </div>
-
+    <img src="your-image-source.jpg" alt="Homepage Image">
     <script>
-        const tabs = ['Works', 'Contact', 'Text', 'Compositions'];
-        const compositionImages = [
-            "https://raw.githubusercontent.com/clemence-ledent/cl-mence-items/main/collage-1.jpg",
-            "https://raw.githubusercontent.com/clemence-ledent/cl-mence-items/main/collage-2.jpg",
-            "https://raw.githubusercontent.com/clemence-ledent/cl-mence-items/main/collage-3.jpg",
-            "https://raw.githubusercontent.com/clemence-ledent/cl-mence-items/main/collage-4.jpg",
-            "https://raw.githubusercontent.com/clemence-ledent/cl-mence-items/main/collage-5.jpg"
-        ];
+        const tabDots = [];
+        const dotCount = 20; // Number of dots
+        const containerSize = window.innerWidth; // Width of the viewport
+        const avoidAreaRadius = 150; // Radius of the area to avoid in the center
+        const centerX = containerSize / 2;
+        const centerY = window.innerHeight / 2;
 
-        const container = document.getElementById('tab-dots');
-        const display = document.getElementById('content-display');
-
-        tabs.forEach(tabName => {
-            const dot = document.createElement('div');
-            dot.className = 'dot';
-            
-            // Random scatter
-            const randomX = Math.random() * (window.innerWidth - 60);
-            const randomY = Math.random() * (window.innerHeight - 60);
-            dot.style.left = randomX + 'px';
-            dot.style.top = randomY + 'px';
-
-            dot.onclick = () => {
-                document.querySelectorAll('.dot').forEach(d => d.classList.remove('active'));
-                dot.classList.add('active');
-                
-                // Clear current content
-                display.innerHTML = '';
-
-                if (tabName === 'Compositions') {
-                    compositionImages.forEach(src => {
-                        const img = document.createElement('img');
-                        img.src = src;
-                        img.className = 'composition-img';
-                        img.alt = "collage";
-                        display.appendChild(img);
-                    });
-                } else {
-                    // Placeholder for other tabs
-                    display.innerHTML = `<h2>${tabName}</h2>`;
+        function scatterDots() {
+            for (let i = 0; i < dotCount; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'tab-dot';
+                const x = Math.random() * containerSize;
+                const y = Math.random() * window.innerHeight;
+                // Check if dot is in the avoided area
+                if (Math.sqrt(Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2)) > avoidAreaRadius) {
+                    dot.style.width = '10px';
+                    dot.style.height = '10px';
+                    dot.style.left = x + 'px';
+                    dot.style.top = y + 'px';
+                    document.body.appendChild(dot);
+                    tabDots.push(dot);
                 }
-            };
+            }
+        }
 
-            container.appendChild(dot);
-        });
+        scatterDots();
     </script>
 </body>
 </html>
