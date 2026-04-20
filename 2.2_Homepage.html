@@ -51,6 +51,86 @@
 
         .composition-img {
             max-width: 100%;
+            max-height: 90vh;
+            height: auto;
+            margin-bottom: 80px; /* Large margin between images */
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="entry-dot" class="dot"></div>
+    <div id="tab-dots"></div>
+
+    <div id="content-display">
+        </div>
+
+    <script>
+        const tabs = ['Works', 'Contact', 'Text', 'Compositions'];
+        const compositionImages = [
+            "https://raw.githubusercontent.com/clemence-ledent/cl-mence-items/Compositions/collage-1.jpg",
+            "https://raw.githubusercontent.com/clemence-ledent/cl-mence-items/Compositions/collage-2.jpg",
+            "https://raw.githubusercontent.com/clemence-ledent/cl-mence-items/Compositions/collage-3.jpg",
+            "https://raw.githubusercontent.com/clemence-ledent/cl-mence-items/Compositions/collage-4.jpg",
+            "https://raw.githubusercontent.com/clemence-ledent/cl-mence-items/Compositions/collage-5.jpg"
+        ];
+
+        const container = document.getElementById('tab-dots');
+        const display = document.getElementById('content-display');
+
+        tabs.forEach(tabName => {
+            const dot = document.createElement('div');
+            dot.className = 'dot';
+            
+            // Random scatter on the right side
+            const randomX = window.innerWidth * 0.65 + Math.random() * (window.innerWidth * 0.3);
+            const randomY = Math.random() * (window.innerHeight - 60);
+            dot.style.left = randomX + 'px';
+            dot.style.top = randomY + 'px';
+
+            dot.onclick = () => {
+                document.querySelectorAll('.dot').forEach(d => d.classList.remove('active'));
+                dot.classList.add('active');
+                
+                // Clear current content
+                display.innerHTML = '';
+
+                if (tabName === 'Compositions') {
+                    compositionImages.forEach(src => {
+                        const img = document.createElement('img');
+                        img.src = src;
+                        img.className = 'composition-img';
+                        img.alt = "collage";
+                        display.appendChild(img);
+                    });
+                } else {
+                    // Placeholder for other tabs
+                    display.innerHTML = `<h2>${tabName}</h2>`;
+                }
+            };
+
+            container.appendChild(dot);
+        });
+    </script>
+</body>
+</html>        .dot.active {
+            background: rgb(0, 0, 255);
+            border-color: rgb(0, 0, 255);
+        }
+
+        /* Container for the scrollable images */
+        #content-display {
+            padding: 120px 20px 60px 20px; /* Space for dots at the top */
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .composition-img {
+            max-width: 100%;
             height: auto;
             margin-bottom: 80px; /* Large margin between images */
             display: block;
