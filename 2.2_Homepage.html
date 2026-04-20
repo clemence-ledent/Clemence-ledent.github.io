@@ -10,7 +10,6 @@
             background: #fff; 
             min-height: 100vh; 
             font-family: sans-serif; 
-            /* allow scrolling if content is long */
             overflow-y: auto; 
             position: relative;
         }
@@ -25,7 +24,7 @@
             display: inline-block;
             cursor: pointer;
             transition: background 0.3s, border-color 0.3s;
-            position: fixed; /* Keep dots fixed so they stay while scrolling content */
+            position: fixed; 
             z-index: 100;
         }
 
@@ -35,6 +34,89 @@
         }
 
         .dot.active {
+            background: rgb(0, 0, 255);
+            border-color: rgb(0, 0, 255);
+        }
+
+        /* Container focused on the left and center */
+        #content-display {
+            padding: 80px 0; 
+            max-width: 60%; /* Keeps content away from the right-side dots */
+            margin-left: 5%;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .composition-img {
+            /* Ensures the image is fully visible in height without scrolling */
+            max-height: 85vh; 
+            max-width: 100%;
+            height: auto;
+            width: auto;
+            margin-bottom: 100px;
+            display: block;
+            object-fit: contain;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="entry-dot" class="dot"></div>
+    <div id="tab-dots"></div>
+
+    <div id="content-display"></div>
+
+    <script>
+        const tabs = ['Works', 'Contact', 'Text', 'Compositions'];
+        const compositionImages = [
+            "https://raw.githubusercontent.com/clemence-ledent/cl-mence-items/Compositions/collage-1.jpg",
+            "https://raw.githubusercontent.com/clemence-ledent/cl-mence-items/Compositions/collage-2.jpg",
+            "https://raw.githubusercontent.com/clemence-ledent/cl-mence-items/Compositions/collage-3.jpg",
+            "https://raw.githubusercontent.com/clemence-ledent/cl-mence-items/Compositions/collage-4.jpg",
+            "https://raw.githubusercontent.com/clemence-ledent/cl-mence-items/Compositions/collage-5.jpg"
+        ];
+
+        const container = document.getElementById('tab-dots');
+        const display = document.getElementById('content-display');
+
+        tabs.forEach(tabName => {
+            const dot = document.createElement('div');
+            dot.className = 'dot';
+            
+            // Scatter dots only on the right 30% of the screen
+            const minX = window.innerWidth * 0.7; 
+            const maxX = window.innerWidth - 60;
+            const randomX = minX + Math.random() * (maxX - minX);
+            
+            const randomY = Math.random() * (window.innerHeight - 60);
+            
+            dot.style.left = randomX + 'px';
+            dot.style.top = randomY + 'px';
+
+            dot.onclick = () => {
+                document.querySelectorAll('.dot').forEach(d => d.classList.remove('active'));
+                dot.classList.add('active');
+                display.innerHTML = '';
+
+                if (tabName === 'Compositions') {
+                    compositionImages.forEach(src => {
+                        const img = document.createElement('img');
+                        img.src = src;
+                        img.className = 'composition-img';
+                        img.alt = "collage";
+                        display.appendChild(img);
+                    });
+                } else {
+                    display.innerHTML = `<h2>${tabName}</h2>`;
+                }
+            };
+
+            container.appendChild(dot);
+        });
+    </script>
+</body>
+</html>        .dot.active {
             background: rgb(0, 0, 255);
             border-color: rgb(0, 0, 255);
         }
