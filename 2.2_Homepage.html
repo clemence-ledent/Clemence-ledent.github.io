@@ -11,6 +11,22 @@
             min-height: 100vh; 
             font-family: sans-serif; 
             overflow-y: auto; 
+            display: flex; /* Creates the invisible column structure */
+        }
+
+        /* The Left/Center Column for Content */
+        #content-wrapper {
+            flex: 0 0 65%; /* Takes up 65% of the screen width */
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Centers images within the left column */
+            padding: 60px 0;
+            z-index: 1;
+        }
+
+        /* The Right Column for Navigation (Invisible) */
+        #nav-zone {
+            flex: 0 0 35%; /* The "Safe Zone" for dots */
             position: relative;
         }
 
@@ -21,16 +37,15 @@
             background: #000;
             border: 1.8px solid #000;
             box-sizing: border-box;
-            display: inline-block;
             cursor: pointer;
             transition: background 0.3s, border-color 0.3s;
-            position: fixed; 
+            position: fixed; /* Keeps dots on screen while scrolling */
             z-index: 100;
         }
 
         #entry-dot {
             top: 15%;
-            right: 10%;
+            right: 5%; /* Adjusted slightly for the new column */
         }
 
         .dot.active {
@@ -38,20 +53,9 @@
             border-color: rgb(0, 0, 255);
         }
 
-        /* Container focused on the left and center */
-        #content-display {
-            padding: 80px 0; 
-            max-width: 60%; /* Keeps content away from the right-side dots */
-            margin-left: 5%;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-        }
-
         .composition-img {
-            /* Ensures the image is fully visible in height without scrolling */
             max-height: 85vh; 
-            max-width: 100%;
+            max-width: 90%; /* Images fill most of their column but stay safe */
             height: auto;
             width: auto;
             margin-bottom: 100px;
@@ -62,10 +66,14 @@
 </head>
 <body>
 
-    <div id="entry-dot" class="dot"></div>
-    <div id="tab-dots"></div>
+    <div id="content-wrapper">
+        <div id="content-display"></div>
+    </div>
 
-    <div id="content-display"></div>
+    <div id="nav-zone">
+        <div id="entry-dot" class="dot"></div>
+        <div id="tab-dots"></div>
+    </div>
 
     <script>
         const tabs = ['Works', 'Contact', 'Text', 'Compositions'];
@@ -84,11 +92,13 @@
             const dot = document.createElement('div');
             dot.className = 'dot';
             
-            // Scatter dots only on the right 30% of the screen
-            const minX = window.innerWidth * 0.7; 
-            const maxX = window.innerWidth - 60;
+            // MATH FOR THE RIGHT COLUMN ONLY:
+            // Dots start at 65% of window width and end at 95%
+            const minX = window.innerWidth * 0.65; 
+            const maxX = window.innerWidth * 0.95;
             const randomX = minX + Math.random() * (maxX - minX);
             
+            // Randomly scatter vertically
             const randomY = Math.random() * (window.innerHeight - 60);
             
             dot.style.left = randomX + 'px';
@@ -108,166 +118,7 @@
                         display.appendChild(img);
                     });
                 } else {
-                    display.innerHTML = `<h2>${tabName}</h2>`;
-                }
-            };
-
-            container.appendChild(dot);
-        });
-    </script>
-</body>
-</html>        .dot.active {
-            background: rgb(0, 0, 255);
-            border-color: rgb(0, 0, 255);
-        }
-
-        /* Container for the scrollable images */
-        #content-display {
-            padding: 120px 20px 60px 20px; /* Space for dots at the top */
-            max-width: 800px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .composition-img {
-            max-width: 100%;
-            max-height: 90vh;
-            height: auto;
-            margin-bottom: 80px; /* Large margin between images */
-            display: block;
-        }
-    </style>
-</head>
-<body>
-
-    <div id="entry-dot" class="dot"></div>
-    <div id="tab-dots"></div>
-
-    <div id="content-display">
-        </div>
-
-    <script>
-        const tabs = ['Works', 'Contact', 'Text', 'Compositions'];
-        const compositionImages = [
-            "https://raw.githubusercontent.com/clemence-ledent/cl-mence-items/Compositions/collage-1.jpg",
-            "https://raw.githubusercontent.com/clemence-ledent/cl-mence-items/Compositions/collage-2.jpg",
-            "https://raw.githubusercontent.com/clemence-ledent/cl-mence-items/Compositions/collage-3.jpg",
-            "https://raw.githubusercontent.com/clemence-ledent/cl-mence-items/Compositions/collage-4.jpg",
-            "https://raw.githubusercontent.com/clemence-ledent/cl-mence-items/Compositions/collage-5.jpg"
-        ];
-
-        const container = document.getElementById('tab-dots');
-        const display = document.getElementById('content-display');
-
-        tabs.forEach(tabName => {
-            const dot = document.createElement('div');
-            dot.className = 'dot';
-            
-            // Random scatter on the right side
-            const randomX = window.innerWidth * 0.65 + Math.random() * (window.innerWidth * 0.3);
-            const randomY = Math.random() * (window.innerHeight - 60);
-            dot.style.left = randomX + 'px';
-            dot.style.top = randomY + 'px';
-
-            dot.onclick = () => {
-                document.querySelectorAll('.dot').forEach(d => d.classList.remove('active'));
-                dot.classList.add('active');
-                
-                // Clear current content
-                display.innerHTML = '';
-
-                if (tabName === 'Compositions') {
-                    compositionImages.forEach(src => {
-                        const img = document.createElement('img');
-                        img.src = src;
-                        img.className = 'composition-img';
-                        img.alt = "collage";
-                        display.appendChild(img);
-                    });
-                } else {
-                    // Placeholder for other tabs
-                    display.innerHTML = `<h2>${tabName}</h2>`;
-                }
-            };
-
-            container.appendChild(dot);
-        });
-    </script>
-</body>
-</html>        .dot.active {
-            background: rgb(0, 0, 255);
-            border-color: rgb(0, 0, 255);
-        }
-
-        /* Container for the scrollable images */
-        #content-display {
-            padding: 120px 20px 60px 20px; /* Space for dots at the top */
-            max-width: 800px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .composition-img {
-            max-width: 100%;
-            height: auto;
-            margin-bottom: 80px; /* Large margin between images */
-            display: block;
-        }
-    </style>
-</head>
-<body>
-
-    <div id="entry-dot" class="dot"></div>
-    <div id="tab-dots"></div>
-
-    <div id="content-display">
-        </div>
-
-    <script>
-        const tabs = ['Works', 'Contact', 'Text', 'Compositions'];
-        const compositionImages = [
-            "https://raw.githubusercontent.com/clemence-ledent/cl-mence-items/Compositions/collage-1.jpg",
-            "https://raw.githubusercontent.com/clemence-ledent/cl-mence-items/Compositions/collage-2.jpg",
-            "https://raw.githubusercontent.com/clemence-ledent/cl-mence-items/Compositions/collage-3.jpg",
-            "https://raw.githubusercontent.com/clemence-ledent/cl-mence-items/Compositions/collage-4.jpg",
-            "https://raw.githubusercontent.com/clemence-ledent/cl-mence-items/Compositions/collage-5.jpg"
-        ];
-
-        const container = document.getElementById('tab-dots');
-        const display = document.getElementById('content-display');
-
-        tabs.forEach(tabName => {
-            const dot = document.createElement('div');
-            dot.className = 'dot';
-            
-            // Random scatter
-            const randomX = Math.random() * (window.innerWidth - 60);
-            const randomY = Math.random() * (window.innerHeight - 60);
-            dot.style.left = randomX + 'px';
-            dot.style.top = randomY + 'px';
-
-            dot.onclick = () => {
-                document.querySelectorAll('.dot').forEach(d => d.classList.remove('active'));
-                dot.classList.add('active');
-                
-                // Clear current content
-                display.innerHTML = '';
-
-                if (tabName === 'Compositions') {
-                    compositionImages.forEach(src => {
-                        const img = document.createElement('img');
-                        img.src = src;
-                        img.className = 'composition-img';
-                        img.alt = "collage";
-                        display.appendChild(img);
-                    });
-                } else {
-                    // Placeholder for other tabs
-                    display.innerHTML = `<h2>${tabName}</h2>`;
+                    display.innerHTML = `<h2 style="font-weight: normal; color: #333;">${tabName}</h2>`;
                 }
             };
 
