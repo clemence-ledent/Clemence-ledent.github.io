@@ -5,8 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Clémence Ledent</title>
     <style>
-        body { margin: 0; background: #fff; height: 100vh; overflow: hidden; position: relative; }
-        
+        body { 
+            margin: 0; 
+            background: #fff; 
+            min-height: 100vh; 
+            font-family: sans-serif; 
+            overflow-y: auto; 
+            position: relative;
+        }
+
+        /* The Dots */
         .dot {
             width: 32px;
             height: 32px;
@@ -17,18 +25,128 @@
             display: inline-block;
             cursor: pointer;
             transition: background 0.3s, border-color 0.3s;
-            position: absolute;
+            position: fixed; 
+            z-index: 100;
         }
 
+        /* Initial state of the entry dot */
         #entry-dot {
             top: 15%;
             right: 10%;
         }
+
+        .dot.active {
+            background: rgb(0, 0, 255);
+            border-color: rgb(0, 0, 255);
+        }
+
+        /* Layout Structure */
+        #main-container {
+            display: flex;
+            width: 100%;
+            min-height: 100vh;
+        }
+
+        /* 75% Left Side: Content */
+        #content-display {
+            width: 75%;
+            padding: 60px 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-sizing: border-box;
+        }
+
+        /* 25% Right Side: Dot Spawn Area (Invisible) */
+        #dot-spawn-zone {
+            width: 25%;
+            position: relative;
+        }
+
+        .composition-img {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 80px;
+            display: block;
+        }
+
+        h2 {
+            font-weight: 300;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
-    <a href="home.html">
-        <div id="entry-dot" class="dot"></div>
-    </a>
+
+    <div id="entry-dot" class="dot"></div>
+
+    <div id="tab-dots"></div>
+
+    <div id="main-container">
+        <div id="content-display"></div>
+        
+        <div id="dot-spawn-zone"></div>
+    </div>
+
+    <script>
+        const tabs = ['Works', 'Contact', 'Text', 'Compositions'];
+        const compositionImages = [
+            "https://raw.githubusercontent.com/clemence-ledent/cl-mence-items/Compositions/collage-1.jpg",
+            "https://raw.githubusercontent.com/clemence-ledent/cl-mence-items/Compositions/collage-2.jpg",
+            "https://raw.githubusercontent.com/clemence-ledent/cl-mence-items/Compositions/collage-3.jpg",
+            "https://raw.githubusercontent.com/clemence-ledent/cl-mence-items/Compositions/collage-4.jpg",
+            "https://raw.githubusercontent.com/clemence-ledent/cl-mence-items/Compositions/collage-5.jpg"
+        ];
+
+        const entryDot = document.getElementById('entry-dot');
+        const container = document.getElementById('tab-dots');
+        const display = document.getElementById('content-display');
+
+        // Function to create navigation dots
+        function initializeNavigation() {
+            tabs.forEach(tabName => {
+                const dot = document.createElement('div');
+                dot.className = 'dot';
+                
+                // Spawn logic: Right 25% of the screen
+                // We calculate 75% of width as the starting 'left' position
+                const minX = window.innerWidth * 0.75;
+                const maxX = window.innerWidth - 40; // 40px padding to keep dot on screen
+                const randomX = Math.random() * (maxX - minX) + minX;
+                const randomY = Math.random() * (window.innerHeight - 60);
+
+                dot.style.left = randomX + 'px';
+                dot.style.top = randomY + 'px';
+
+                dot.onclick = () => {
+                    // Visual feedback for active tab
+                    document.querySelectorAll('.dot').forEach(d => d.classList.remove('active'));
+                    dot.classList.add('active');
+                    
+                    display.innerHTML = '';
+
+                    if (tabName === 'Compositions') {
+                        compositionImages.forEach(src => {
+                            const img = document.createElement('img');
+                            img.src = src;
+                            img.className = 'composition-img';
+                            img.alt = "collage";
+                            display.appendChild(img);
+                        });
+                    } else {
+                        display.innerHTML = `<h2>${tabName}</h2>`;
+                    }
+                };
+
+                container.appendChild(dot);
+            });
+        }
+
+        // Trigger the "Home" transition when entry dot is clicked
+        entryDot.onclick = () => {
+            entryDot.style.display = 'none'; // Hide the start dot
+            initializeNavigation(); // Spawn the menu dots
+        };
+    </script>
 </body>
 </html>
