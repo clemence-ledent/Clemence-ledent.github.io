@@ -5,147 +5,239 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Clémence Ledent</title>
     <style>
+        /* ==========================================================================
+           GLOBAL & CORE LAYOUT
+           ========================================================================== */
         body { 
             margin: 0; 
             background: #fff; 
             min-height: 100vh; 
-            font-family: sans-serif; 
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; 
             overflow-y: auto; 
             position: relative;
+            font-size: 18px; 
         }
 
+        #main-container { display: flex; width: 100%; min-height: 100vh; }
+        #content-display { width: 75%; padding: 80px 60px; box-sizing: border-box; }
+        
         /* The Dots */
         .dot {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: #000;
-            border: 1.8px solid #000;
-            box-sizing: border-box;
-            display: inline-block;
-            cursor: pointer;
-            transition: background 0.3s, border-color 0.3s;
-            position: fixed; 
-            z-index: 100;
+            width: 32px; height: 32px; border-radius: 50%;
+            background: #000; border: 1.8px solid #000;
+            box-sizing: border-box; cursor: pointer;
+            transition: background 0.3s; position: fixed; z-index: 100;
+        }
+        #entry-dot { top: 15%; right: 10%; }
+        #entry-dot.transformed { background: #fff; border-color: rgb(0, 0, 255); cursor: default; }
+        .dot.active { background: rgb(0, 0, 255); border-color: rgb(0, 0, 255); }
+
+        /* General Trigger Behavior (Prevents Jumping) */
+        .trigger { cursor: pointer; color: #000; font-weight: 400; white-space: nowrap; width: fit-content; }
+        .trigger.active { text-decoration: underline; }
+        #content-area { margin-top: 30px; color: #000; font-weight: 300; line-height: 1.6; max-width: 700px; }
+
+        /* ==========================================================================
+           1. CONTACT SECTION (Styling)
+           ========================================================================== */
+        .blue-text { color: rgb(0, 0, 255); font-weight: 400; line-height: 1.4; }
+        .contact-bio { 
+            font-weight: 300; 
+            color: #000; 
+            margin-top: 40px; 
+            line-height: 1.6; 
+            max-width: 700px; 
         }
 
-        /* Initial state of the entry dot */
-        #entry-dot {
-            top: 15%;
-            right: 10%;
+        /* ==========================================================================
+           2. WORKS SECTION (Layout & Subtabs)
+           ========================================================================== */
+        .works-nav { 
+            display: flex; 
+            flex-wrap: wrap; 
+            column-gap: 35px; 
+            row-gap: 15px; 
+            margin-bottom: 50px; 
+            align-items: center; 
+        }
+        
+        /* Individual Work Colors & Interaction */
+        .work-trigger.active-boke { color: #fcbe11; }
+        .work-trigger.active-chihuahua { color: #ea5bf6; }
+        .work-trigger.active-uitfluiten { color: rgb(255, 0, 0); }
+        .work-trigger.active-abc { text-shadow: 0.5px 0 0 black, -0.5px 0 0 black; }
+        .work-trigger.active-braida { text-decoration: underline; }
+
+        /* Special 'o' for Le bazar troué */
+        .filled-o { position: relative; }
+        .work-trigger.active-troue .filled-o::before {
+            content: ""; position: absolute; width: 7px; height: 7px;
+            background: #000; border-radius: 50%; top: 55%; left: 50%;
+            transform: translate(-50%, -50%); z-index: -1;
         }
 
-        .dot.active {
-            background: rgb(0, 0, 255);
-            border-color: rgb(0, 0, 255);
-        }
+        /* ==========================================================================
+           3. TEXT SECTION (Layout & Subtabs)
+           ========================================================================== */
+        .subnav-container { display: flex; flex-direction: column; gap: 15px; margin-bottom: 50px; }
+        
+        /* Links between Work and Text */
+        .link-to-work { color: #ea5bf6; text-decoration: underline; cursor: pointer; }
+        .link-to-text { color: rgb(0, 0, 255); text-decoration: underline; cursor: pointer; }
 
-        /* Layout Structure */
-        #main-container {
-            display: flex;
-            width: 100%;
-            min-height: 100vh;
-        }
-
-        /* 75% Left Side: Content */
-        #content-display {
-            width: 75%;
-            padding: 60px 40px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            box-sizing: border-box;
-        }
-
-        /* 25% Right Side: Dot Spawn Area (Invisible) */
-        #dot-spawn-zone {
-            width: 25%;
-            position: relative;
-        }
-
-        .composition-img {
-            max-width: 100%;
-            height: auto;
-            margin-bottom: 80px;
-            display: block;
-        }
-
-        h2 {
-            font-weight: 300;
-            margin-top: 20px;
-        }
+        /* ==========================================================================
+           4. COMPOSITIONS SECTION
+           ========================================================================== */
+        .composition-img { max-width: 100%; height: auto; margin-bottom: 80px; display: block; }
     </style>
 </head>
 <body>
 
     <div id="entry-dot" class="dot"></div>
-
     <div id="tab-dots"></div>
 
     <div id="main-container">
         <div id="content-display"></div>
-        
-        <div id="dot-spawn-zone"></div>
     </div>
 
     <script>
-        const tabs = ['Works', 'Contact', 'Text', 'Compositions'];
-        const compositionImages = [
-            "https://raw.githubusercontent.com/clemence-ledent/cl-mence-items/Compositions/collage-1.jpg",
-            "https://raw.githubusercontent.com/clemence-ledent/cl-mence-items/Compositions/collage-2.jpg",
-            "https://raw.githubusercontent.com/clemence-ledent/cl-mence-items/Compositions/collage-3.jpg",
-            "https://raw.githubusercontent.com/clemence-ledent/cl-mence-items/Compositions/collage-4.jpg",
-            "https://raw.githubusercontent.com/clemence-ledent/cl-mence-items/Compositions/collage-5.jpg"
-        ];
+        const tabs = ['Contact', 'Works', 'Compositions', 'Text'];
 
+        /* ==========================================================================
+           DATA: WORKS CONTENT
+           ========================================================================== */
+        const worksData = {
+            'boke': { info: '°2026<br>Video performance' },
+	'chihuahua': { 
+  	  info: '°2026<br>Text, plaktattoo, happening<br><br>De plaktattoo doet hetzelfde als de 	chihuahua: hij expandeert. Door de plaktattoo uit te delen en op de huid aan te brengen, 	krijgt de chihuahua momentaan meer aandacht, tot het plaksel na verloop van tijd vervaagt en 	verdwijnt. Zoals de luide, schelle blafjes van dat driftige beest die in je oren nafluiten. 	Wat overblijft, is een herinnering in de vorm van een korte beschrijvig van wat er was.' +
+          '<div style="margin-top: 30px;">' +
+              '<span class="trigger" style="color: #ea5bf6; text-decoration: none; cursor: pointer;" onclick="switchTab(\'Text\', \'chihuahua-theory\')">' +
+                  'De chihuahua Theorie' +
+              '</span>' +
+          '</div>'
+},
+
+            'uitfluiten': { info: '°2025<br>Interactieve installatie, sculptuur' },
+            'abc': { info: '°2025<br>Video performance, script' },
+            'troue': { info: '°2025<br>expo, curatie, "réflexions illustrées"' },
+            'braida': { info: '°2024<br>résidentie, expo, samenkomst' }
+        };
+
+        /* ==========================================================================
+           DATA: TEXT CONTENT
+           ========================================================================== */
+        const textData = {
+            'denkbeeldig': { title: 'De denkbeeldige ruimte', content: 'Text for De denkbeeldige ruimte...' },
+            'shopsign': { title: 'De shopsign', content: 'Text for De shopsign...' },
+            'chihuahua-theory': { 
+                title: 'De chihuahua theorie', 
+                content: 'Hier komt de tekst van de chihuahua theorie... <br><br> <span class="link-to-work" onclick="switchTab(\'Works\', \'chihuahua\')">Chihuahua plaktattoo</span>' 
+            },
+            'tafelgebeuren': { title: 'Het rigiditeitsgehalte van een tafelgebeuren', content: 'Text for tafelgebeuren...' }
+        };
+
+        /* ==========================================================================
+           CORE LOGIC: NAVIGATION & RENDERING
+           ========================================================================== */
         const entryDot = document.getElementById('entry-dot');
         const container = document.getElementById('tab-dots');
         const display = document.getElementById('content-display');
 
-        // Function to create navigation dots
         function initializeNavigation() {
-            tabs.forEach(tabName => {
+            container.innerHTML = '';
+            let positions = Array.from({length: tabs.length}, () => Math.random() * (window.innerHeight - 100) + 50).sort((a, b) => a - b);
+
+            tabs.forEach((tabName, index) => {
                 const dot = document.createElement('div');
                 dot.className = 'dot';
-                
-                // Spawn logic: Right 25% of the screen
-                // We calculate 75% of width as the starting 'left' position
+                dot.id = `dot-${tabName}`;
                 const minX = window.innerWidth * 0.75;
-                const maxX = window.innerWidth - 40; // 40px padding to keep dot on screen
-                const randomX = Math.random() * (maxX - minX) + minX;
-                const randomY = Math.random() * (window.innerHeight - 60);
-
-                dot.style.left = randomX + 'px';
-                dot.style.top = randomY + 'px';
-
-                dot.onclick = () => {
-                    // Visual feedback for active tab
-                    document.querySelectorAll('.dot').forEach(d => d.classList.remove('active'));
-                    dot.classList.add('active');
-                    
-                    display.innerHTML = '';
-
-                    if (tabName === 'Compositions') {
-                        compositionImages.forEach(src => {
-                            const img = document.createElement('img');
-                            img.src = src;
-                            img.className = 'composition-img';
-                            img.alt = "collage";
-                            display.appendChild(img);
-                        });
-                    } else {
-                        display.innerHTML = `<h2>${tabName}</h2>`;
-                    }
-                };
-
+                const maxX = window.innerWidth - 60;
+                dot.style.top = positions[index] + 'px';
+                dot.style.left = (Math.random() * (maxX - minX) + minX) + 'px';
+                dot.onclick = () => activateTab(tabName);
                 container.appendChild(dot);
             });
         }
 
-        // Trigger the "Home" transition when entry dot is clicked
-        entryDot.onclick = () => {
-            entryDot.style.display = 'none'; // Hide the start dot
-            initializeNavigation(); // Spawn the menu dots
+        function activateTab(tabName, subTabToOpen = null) {
+            document.querySelectorAll('.dot').forEach(d => d.classList.remove('active'));
+            const dot = document.getElementById(`dot-${tabName}`);
+            if (dot) dot.classList.add('active');
+            renderTab(tabName, subTabToOpen);
+        }
+
+        function switchTab(mainTab, subTab) {
+            activateTab(mainTab, subTab);
+        }
+
+        function renderTab(tabName, autoOpenSub = null) {
+            display.innerHTML = '';
+            
+            // 1. Contact Rendering
+            if (tabName === 'Contact') {
+                display.innerHTML = `
+                    <div class="blue-text">
+                        <div>Clémence Ledent</div><div>°2000, Brussels</div>
+                        <div>ledent.clemence@gmail.com</div><div>+32474957647</div>
+                    </div>
+                    <div class="contact-bio">
+                        <p>Clémence Ledent werkt met installaties, performances en filmische formats waarin sociale situaties worden gescript en licht ontregeld. Ze vertrekt vanuit alledaagse contexten zoals wachtruimtes, gangen of diners, en onderzoekt hoe ruimte, timing en impliciete regels ons gedrag sturen.</p>
+                        <p>Haar praktijk is scenario-gebaseerd: elk werk vertrekt vanuit een structuur die bepaalt hoe bezoekers zich bewegen, wachten, luisteren of handelen. De toeschouwer wordt daarbij geen externe kijker, maar een actieve schakel binnen het werk. Er is geen duidelijke grens tussen acteur en spectator.</p>
+                        <p>Ledent werkt met geluid, objecten, tekstfragmenten en performatieve handelingen. Taal wordt vaak gereduceerd of bewust onvolledig gelaten; acties en stiltes dragen de betekenis. Haar installaties functioneren door gebruik — of net door het ontbreken daarvan — en maken zichtbaar hoe aandacht circuleert binnen een ruimte.</p>
+                        <p>Wat ogenschijnlijk speels of absurd is, legt sociale codes bloot en test hun breekbaarheid. Het werk ontstaat in de spanning tussen controle en toeval, tussen script en improvisatie.</p>
+                    </div>`;
+            
+            // 2. Works Rendering
+            } else if (tabName === 'Works') {
+                display.innerHTML = `
+                    <div class="works-nav">
+                        <span class="work-trigger trigger" id="work-boke" onclick="showWork('boke')">Boke Kaas</span>
+                        <span class="work-trigger trigger" id="work-chihuahua" onclick="showWork('chihuahua')">Chihuahua plaktattoo</span>
+                        <span class="work-trigger trigger" id="work-uitfluiten" onclick="showWork('uitfluiten')">Uitfluiten</span>
+                        <span class="work-trigger trigger" id="work-abc" onclick="showWork('abc')">A, B, C</span>
+                        <span class="work-trigger trigger" id="work-troue" onclick="showWork('troue')">Le bazar tr<span class="filled-o">o</span>ué</span>
+                        <span class="work-trigger trigger" id="work-braida" onclick="showWork('braida')">toç in braida</span>
+                    </div><div id="content-area"></div>`;
+                if(autoOpenSub) showWork(autoOpenSub);
+            
+            // 3. Compositions Rendering
+            } else if (tabName === 'Compositions') {
+                display.innerHTML = `<div class="blue-text">Compositions</div><div id="content-area">Images coming soon...</div>`;
+            
+            // 4. Text Rendering
+            } else if (tabName === 'Text') {
+                display.innerHTML = `
+                    <div class="subnav-container">
+                        <span class="trigger" id="text-denkbeeldig" onclick="showText('denkbeeldig')">De denkbeeldige ruimte</span>
+                        <span class="trigger" id="text-shopsign" onclick="showText('shopsign')">De shopsign</span>
+                        <span class="trigger" id="text-chihuahua-theory" onclick="showText('chihuahua-theory')">De chihuahua theorie</span>
+                        <span class="trigger" id="text-tafelgebeuren" onclick="showText('tafelgebeuren')">Het rigiditeitsgehalte van een tafelgebeuren</span>
+                    </div><div id="content-area"></div>`;
+                if(autoOpenSub) showText(autoOpenSub);
+            }
+        }
+
+        /* Helper Functions to handle Subtabs */
+        function showWork(key) {
+            document.querySelectorAll('.work-trigger').forEach(t => t.className = 'work-trigger trigger');
+            const el = document.getElementById('work-' + key);
+            if(el) el.classList.add('active-' + key);
+            document.getElementById('content-area').innerHTML = worksData[key].info;
+        }
+
+        function showText(key) {
+            document.querySelectorAll('.subnav-container .trigger').forEach(t => t.classList.remove('active'));
+            const el = document.getElementById('text-' + key);
+            if(el) el.classList.add('active');
+            document.getElementById('content-area').innerHTML = textData[key].content;
+        }
+
+        entryDot.onclick = function() {
+            if (!this.classList.contains('transformed')) {
+                this.classList.add('transformed');
+                initializeNavigation();
+            }
         };
     </script>
 </body>
