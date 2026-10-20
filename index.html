@@ -1,10 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta name="google-site-verification" content="47pKQUKNiLfiB0YzYA75Dx0bHkYyUDsCU6oA0tGKBeY" />
+    <meta name="google-site-verification" content="47pKQUKNiLfiB0YzYA75Dx0bHkYyUDsCU6oA0tGKBeY" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clémence Ledent</title>
+    
+    <!-- SEO & Identity Meta Tags -->
+    <title>Clémence Ledent — Visual Artist & Performance</title>
+    <meta name="description" content="Portfolio of Clémence Ledent (°2000, Brussels). Working with installations, video performances, scripts, and audio in social contexts.">
+    <meta name="keywords" content="Clémence Ledent, Visual Artist, Brussels, Installation Art, Performance Art, Video Performance, Contemporary Art">
+    <meta name="author" content="Clémence Ledent">
+
+    <!-- Social Media Preview Tags (Open Graph) -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://clemenceledent.github.io/"> <!-- Update with your exact GitHub URL if different -->
+    <meta property="og:title" content="Clémence Ledent — Visual Artist">
+    <meta property="og:description" content="Installations, video performances, and scripts exploring scripted social situations and spaces.">
+    <meta property="og:image" content="https://clemenceledent.github.io/images/boke-kaas-1-website.jpg">
+
+    <!-- Twitter Card Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Clémence Ledent — Visual Artist">
+    <meta name="twitter:description" content="Portfolio of Clémence Ledent. Installations, video performances, and scripts.">
+    <meta name="twitter:image" content="https://clemenceledent.github.io/images/boke-kaas-1-website.jpg">
+
     <style>
         /* ==========================================================================
            GLOBAL & CORE LAYOUT
@@ -63,15 +82,23 @@
         }
         
         /* Individual Work Colors & Interaction */
+        .work-trigger.active-residus { color: rgb(0, 100, 255); }
+        .work-trigger.active-waitingline { color: rgb(100, 100, 100); }
         .work-trigger.active-boke { color: #fcbe11; }
-        .work-trigger.active-chihuahua { color: #ea5bf6; }
-        .work-trigger.active-uitfluiten { color: rgb(255, 0, 0); }
+        .work-trigger.active-celebratie { color: #ff69b4; }
         .work-trigger.active-abc { text-shadow: 0.5px 0 0 black, -0.5px 0 0 black; }
-        .work-trigger.active-braida { text-decoration: underline; }
+        .work-trigger.active-untitled { font-style: italic; }
+        .work-trigger.active-sunnyside { color: orange; }
+        .work-trigger.active-metverwarring { color: purple; }
+
+        /* Collaborative Projects Styling */
+        .collab-trigger.active-troue { text-decoration: underline; }
+        .collab-trigger.active-braida { text-decoration: underline; }
+        .collab-trigger.active-rotte { color: brown; }
 
         /* Special 'o' for Le bazar troué */
         .filled-o { position: relative; }
-        .work-trigger.active-troue .filled-o::before {
+        .collab-trigger.active-troue .filled-o::before {
             content: ""; position: absolute; width: 7px; height: 7px;
             background: #000; border-radius: 50%; top: 55%; left: 50%;
             transform: translate(-50%, -50%); z-index: -1;
@@ -85,11 +112,6 @@
         /* Links between Work and Text */
         .link-to-work { color: #ea5bf6; text-decoration: underline; cursor: pointer; }
         .link-to-text { color: rgb(0, 0, 255); text-decoration: underline; cursor: pointer; }
-
-        /* ==========================================================================
-           4. COMPOSITIONS SECTION
-           ========================================================================== */
-        .composition-img { max-width: 100%; height: auto; margin-bottom: 80px; display: block; }
     </style>
 </head>
 <body>
@@ -102,26 +124,51 @@
     </div>
 
     <script>
-        const tabs = ['Contact', 'Works', 'Compositions', 'Text'];
+        const tabs = ['Contact', 'Works', 'Collaborative projects', 'Text'];
 
         /* ==========================================================================
            DATA: WORKS CONTENT
            ========================================================================== */
         const worksData = {
-            'boke': { info: '2026<br>Video performance<br>Three characters are making and eating a cheese sandwich. They stare just past the camera.<br><br><img src="images/boke-kaas-1-website.jpg" alt="Boke Kaas" style="max-width: 100%; height: auto; margin-top: 20px;"><br><br><img src="images/boke-kaas-2-website.jpg" alt="Boke Kaas" style="max-width: 100%; height: auto; margin-top: 20px;"><br><br><img src="images/boke-kaas-3-website.jpg" alt="Boke Kaas" style="max-width: 100%; height: auto; margin-top: 20px;">' },
-	'chihuahua': { 
-  	  info: '°2026<br>Text, plaktattoo, happening<br><br>De plaktattoo doet hetzelfde als de 	chihuahua: hij expandeert. Door de plaktattoo uit te delen en op de huid aan te brengen, 	krijgt de chihuahua momentaan meer aandacht, tot het plaksel na verloop van tijd vervaagt en 	verdwijnt. Zoals de luide, schelle blafjes van dat driftige beest die in je oren nafluiten. 	Wat overblijft, is een herinnering in de vorm van een korte beschrijvig van wat er was.' +
-          '<div style="margin-top: 30px;">' +
-              '<span class="trigger" style="color: #ea5bf6; text-decoration: none; cursor: pointer;" onclick="switchTab(\'Text\', \'chihuahua-theory\')">' +
-                  'De chihuahua Theorie' +
-              '</span>' +
-          '</div>'
-},
+            'residus': { 
+                info: '°2026<br>In situ sound installation: obsessively tidied conference room, handmade speakers<br><br><em>A staging of presence through absence. Speakers are scattered throughout the space, emitting commonplace sounds of four invisible characters. The work uses ambient sound to trigger a hyper-awareness of the physical space and the bodies that occupy it.</em>' 
+            },
+            'waitingline': { 
+                info: '°2026<br>1:1 cardboard cutouts, questionnaires<br><br><em>How do we perceive? A reflection on social stereotypes and collective assumptions. Life-sized figures, viewed only from behind, generated by AI based on descriptions of people I encountered in Ghent. Spectators are invited to fill out questionnaires, speculating on the hidden lives and identities of these anonymous individuals.</em>' 
+            },
+            'boke': { 
+                info: '°2026<br>Video performance<br><br><em>Three characters are making and eating a cheese sandwich. They stare just past the camera.</em><br><br><img src="images/boke-kaas-1-website.jpg" alt="Boke Kaas" style="max-width: 100%; height: auto; margin-top: 20px;"><br><br><img src="images/boke-kaas-2-website.jpg" alt="Boke Kaas" style="max-width: 100%; height: auto; margin-top: 20px;"><br><br><img src="images/boke-kaas-3-website.jpg" alt="Boke Kaas" style="max-width: 100%; height: auto; margin-top: 20px;">' 
+            },
+            'celebratie': { 
+                info: '°2026<br>Sculptural installation<br><br><em>Curly ornaments that wish to celebrate the space.</em>' 
+            },
+            'abc': { 
+                info: '°2025<br>Video performance, script<br><br><em>Research on entropy (tested in a controlled environment). Seated at a sterile table in what seems to be a parking lot, one character attempts to contain the rising tension between the two others.</em>' 
+            },
+            'untitled': { 
+                info: '°2025<br>Archival video, digital alteration<br><br><em>Archival video exploration featuring digital alteration.</em>' 
+            },
+            'sunnyside': { 
+                info: '°2025<br>Collage series, poster design<br><br><em>Presented during Le Bazar troué at Salvatore Ghent.</em>' 
+            },
+            'metverwarring': { 
+                info: '°2024<br>Performance, mise-en-scène<br><br><em>Immersive performance navigating around a counter. Participants wear jackets blending them into the architecture. Guided through a cycle of calculated confusion, the participants get stuck in a loop staging the impossibility of truly accessing the "other side".</em>' 
+            }
+        };
 
-            'uitfluiten': { info: '°2025<br>Interactieve installatie, sculptuur' },
-            'abc': { info: '°2025<br>Video performance, script' },
-            'troue': { info: '°2025<br>expo, curatie, "réflexions illustrées"' },
-            'braida': { info: '°2024<br>résidentie, expo, samenkomst' }
+        /* ==========================================================================
+           DATA: COLLABORATIVE PROJECTS CONTENT
+           ========================================================================== */
+        const collabData = {
+            'troue': { 
+                info: '°2025<br>expo, curatie, "réflexions illustrées"<br><br><em>Collaborative exhibition project centering around curation and illustrated reflections.</em>' 
+            },
+            'braida': { 
+                info: '°2024<br>résidentie, expo, samenkomst<br><br><em>Residency, exhibition, and gathering project exploring shared spaces.</em>' 
+            },
+            'rotte': { 
+                info: '°2026<br>Collaborative installation<br><br><em>Alle rotte takken collaborative project description.</em>' 
+            }
         };
 
         /* ==========================================================================
@@ -132,7 +179,7 @@
             'shopsign': { title: 'De shopsign', content: 'Text for De shopsign...' },
             'chihuahua-theory': { 
                 title: 'De chihuahua theorie', 
-                content: 'Hier komt de tekst van de chihuahua theorie... <br><br> <span class="link-to-work" onclick="switchTab(\'Works\', \'chihuahua\')">Chihuahua plaktattoo</span>' 
+                content: 'Hier komt de tekst van de chihuahua theorie...' 
             },
             'tafelgebeuren': { title: 'Het rigiditeitsgehalte van een tafelgebeuren', content: 'Text for tafelgebeuren...' }
         };
@@ -193,18 +240,26 @@
             } else if (tabName === 'Works') {
                 display.innerHTML = `
                     <div class="works-nav">
-                        <span class="work-trigger trigger" id="work-boke" onclick="showWork('boke')">Boke Kaas</span>
-                        <span class="work-trigger trigger" id="work-chihuahua" onclick="showWork('chihuahua')">Chihuahua plaktattoo</span>
-                        <span class="work-trigger trigger" id="work-uitfluiten" onclick="showWork('uitfluiten')">Uitfluiten</span>
+                        <span class="work-trigger trigger" id="work-residus" onclick="showWork('residus')">Residus (Bartsoen)</span>
+                        <span class="work-trigger trigger" id="work-waitingline" onclick="showWork('waitingline')">The waiting line</span>
+                        <span class="work-trigger trigger" id="work-boke" onclick="showWork('boke')">Boke kaas</span>
+                        <span class="work-trigger trigger" id="work-celebratie" onclick="showWork('celebratie')">celebratie compagnons</span>
                         <span class="work-trigger trigger" id="work-abc" onclick="showWork('abc')">A, B, C</span>
-                        <span class="work-trigger trigger" id="work-troue" onclick="showWork('troue')">Le bazar tr<span class="filled-o">o</span>ué</span>
-                        <span class="work-trigger trigger" id="work-braida" onclick="showWork('braida')">toç in braida</span>
+                        <span class="work-trigger trigger" id="work-untitled" onclick="showWork('untitled')">Untitled (pas de mousquetaire)</span>
+                        <span class="work-trigger trigger" id="work-sunnyside" onclick="showWork('sunnyside')">Sunny side Up</span>
+                        <span class="work-trigger trigger" id="work-metverwarring" onclick="showWork('metverwarring')">Met verwarring in de wachtruimte</span>
                     </div><div id="content-area"></div>`;
                 if(autoOpenSub) showWork(autoOpenSub);
             
-            // 3. Compositions Rendering
-            } else if (tabName === 'Compositions') {
-                display.innerHTML = `<div class="blue-text">Compositions</div><div id="content-area">Images coming soon...</div>`;
+            // 3. Collaborative Projects Rendering
+            } else if (tabName === 'Collaborative projects') {
+                display.innerHTML = `
+                    <div class="works-nav">
+                        <span class="collab-trigger trigger" id="collab-troue" onclick="showCollab('troue')">Le bazar tr<span class="filled-o">o</span>ué</span>
+                        <span class="collab-trigger trigger" id="collab-braida" onclick="showCollab('braida')">toç in braida</span>
+                        <span class="collab-trigger trigger" id="collab-rotte" onclick="showCollab('rotte')">Alle rotte takken</span>
+                    </div><div id="content-area"></div>`;
+                if(autoOpenSub) showCollab(autoOpenSub);
             
             // 4. Text Rendering
             } else if (tabName === 'Text') {
@@ -225,6 +280,13 @@
             const el = document.getElementById('work-' + key);
             if(el) el.classList.add('active-' + key);
             document.getElementById('content-area').innerHTML = worksData[key].info;
+        }
+
+        function showCollab(key) {
+            document.querySelectorAll('.collab-trigger').forEach(t => t.className = 'collab-trigger trigger');
+            const el = document.getElementById('collab-' + key);
+            if(el) el.classList.add('active-' + key);
+            document.getElementById('content-area').innerHTML = collabData[key].info;
         }
 
         function showText(key) {
