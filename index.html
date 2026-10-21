@@ -75,21 +75,32 @@
         .works-nav { 
             display: flex; 
             flex-wrap: wrap; 
-            column-gap: 35px; 
-            row-gap: 15px; 
+            column-gap: 50px; 
+            row-gap: 20px; 
             margin-bottom: 50px; 
             align-items: center; 
         }
         
-        /* Individual Work Colors & Interaction */
-        .work-trigger.active-residus { color: rgb(0, 100, 255); }
-        .work-trigger.active-waitingline { color: rgb(100, 100, 100); }
-        .work-trigger.active-boke { color: #fcbe11; }
-        .work-trigger.active-celebratie { color: #ff69b4; }
-        .work-trigger.active-abc { text-shadow: 0.5px 0 0 black, -0.5px 0 0 black; }
-        .work-trigger.active-untitled { font-style: italic; }
-        .work-trigger.active-sunnyside { color: orange; }
-        .work-trigger.active-metverwarring { color: purple; }
+        /* Work Subtab Numbers & Active Dot Transformation */
+        .work-trigger {
+            cursor: pointer; 
+            color: #000; 
+            font-weight: 400; 
+            width: 32px; 
+            height: 32px; 
+            display: inline-flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 22px; 
+            box-sizing: border-box;
+            transition: background 0.3s, border 0.3s;
+        }
+        .work-trigger.active {
+            background: #000; 
+            border: 1.8px solid #000; 
+            border-radius: 50%; 
+            color: transparent; 
+        }
 
         /* Collaborative Projects Styling */
         .collab-trigger.active-troue { text-decoration: underline; }
@@ -146,7 +157,7 @@
                 info: '<strong>A, B, C</strong> (2025)<br>Video performance, script<br><br><em>Research on entropy (tested in a controlled environment). Seated at a table, one character attempts to contain the rising tension between the two others.</em><br><br><img src="images/ABC-1-website.png" alt="A, B, C" style="max-width: 100%; height: auto; margin-top: 20px;"><br><br><img src="images/ABC-2-website.png" alt="A, B, C" style="max-width: 100%; height: auto; margin-top: 20px;"><br><br><img src="images/ABC-3-website.png" alt="A, B, C" style="max-width: 100%; height: auto; margin-top: 20px;">' 
             },
             'untitled': { 
-                info: '<strong>Untitled (pas de mousquetaires)</strong> (2025)<br>Archival video, digital alteration<br><br><em>Archival video exploration featuring digital alteration.</em><br><br><img src="Censure-1-website.png" alt="images/Untitled (pas de mousquetaires)" style="max-width: 100%; height: auto; margin-top: 20px;"><br><br><img src="images/Censure-2-website.png" alt="Untitled (pas de mousquetaires)" style="max-width: 100%; height: auto; margin-top: 20px;"><br><br><img src="images/Censure-3-website.png" alt="Untitled (pas de mousquetaires)" style="max-width: 100%; height: auto; margin-top: 20px;">' 
+                info: '<strong>Untitled (pas de mousquetaires)</strong> (2025)<br>Archival video, digital alteration<br><br><em>Archival video exploration featuring digital alteration.</em><br><br><img src="images/Censure-1-website.png" alt="Untitled (pas de mousquetaires)" style="max-width: 100%; height: auto; margin-top: 20px;"><br><br><img src="images/Censure-2-website.png" alt="Untitled (pas de mousquetaires)" style="max-width: 100%; height: auto; margin-top: 20px;"><br><br><img src="images/Censure-3-website.png" alt="Untitled (pas de mousquetaires)" style="max-width: 100%; height: auto; margin-top: 20px;">' 
             },
             'sunnyside': { 
                 info: '<strong>Sunny side Up</strong> (2025)<br>Collage series, poster design<br><br><em>Presented during Le Bazar troué at Salvatore Ghent.</em>' 
@@ -161,7 +172,7 @@
            ========================================================================== */
         const collabData = {
             'troue': { 
-                info: '<strong>Le bazar troué</strong> (2025)<br>Group exhibition with works from<strong>Ibe De Cat, Merel Van den Eynde, Puck van der Poel, Louis Locus, Elisa Palm, Willem Roekaers and Clémence Ledent</strong><br><br>réflections illustrées<br></em>' 
+                info: '<strong>Le bazar troué</strong> (2025)<br>Group exhibition with works from <strong>Ibe De Cat, Merel Van den Eynde, Puck van der Poel, Louis Locus, Elisa Palm, Willem Roekaers and Clémence Ledent</strong><br><br><em>réflections illustrées</em>' 
             },
             'braida': { 
                 info: '2024, 2026<br>In collaboration with <strong>Claude Perischetti</strong> and <strong>Greta Petiziol</strong>. One week residency in the Mountains of North Italy.<br>' 
@@ -236,7 +247,7 @@
                         <p>Wat ogenschijnlijk speels of absurd is, legt sociale codes bloot en test hun breekbaarheid. Het werk ontstaat in de spanning tussen controle en toeval, tussen script en improvisatie.</p>
                     </div>`;
             
-            // 2. Works Rendering (Numbered Subtabs)
+            // 2. Works Rendering (Numbered Subtabs turning into dots)
             } else if (tabName === 'Works') {
                 display.innerHTML = `
                     <div class="works-nav">
@@ -276,9 +287,13 @@
 
         /* Helper Functions to handle Subtabs */
         function showWork(key) {
-            document.querySelectorAll('.work-trigger').forEach(t => t.className = 'work-trigger trigger');
+            document.querySelectorAll('.work-trigger').forEach(t => {
+                t.className = 'work-trigger trigger';
+            });
             const el = document.getElementById('work-' + key);
-            if(el) el.classList.add('active-' + key);
+            if(el) {
+                el.classList.add('active');
+            }
             document.getElementById('content-area').innerHTML = worksData[key].info;
         }
 
