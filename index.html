@@ -81,7 +81,7 @@
             align-items: center; 
         }
         
-        /* Work Subtab Numbers & Active Dot Transformation (Transition removed to fix glitch) */
+        /* Work Subtab Numbers & Active Dot Transformation (Scattered on the right) */
         .work-trigger {
             cursor: pointer; 
             color: #000; 
@@ -94,6 +94,8 @@
             font-size: 22px; 
             box-sizing: border-box;
             transition: none; 
+            position: fixed; 
+            z-index: 100;
         }
         .work-trigger.active {
             background: #000; 
@@ -136,6 +138,7 @@
 
     <script>
         const tabs = ['Contact', 'Works', 'Collaborative projects', 'Text'];
+        const workKeys = ['residus', 'waitingline', 'boke', 'celebratie', 'abc', 'untitled', 'sunnyside', 'metverwarring'];
 
         /* ==========================================================================
            DATA: WORKS CONTENT (Includes title, year, technical description, short explanation)
@@ -157,7 +160,7 @@
                 info: '<strong>A, B, C</strong> (2025)<br>Video performance, script<br><br><em>Research on entropy (tested in a controlled environment). Seated at a table, one character attempts to contain the rising tension between the two others.</em><br><br><img src="images/ABC-1-website.png" alt="A, B, C" style="max-width: 100%; height: auto; margin-top: 20px;"><br><br><img src="images/ABC-2-website.png" alt="A, B, C" style="max-width: 100%; height: auto; margin-top: 20px;"><br><br><img src="images/ABC-3-website.png" alt="A, B, C" style="max-width: 100%; height: auto; margin-top: 20px;">' 
             },
             'untitled': { 
-                info: '<strong>Untitled (pas de mousquetaires)</strong> (2025)<br>Archival video, digital alteration<br><br><em>Archival video exploration featuring digital alteration.</em><br><br><img src="images/Censure-1-website.png" alt="Untitled (pas de mousquetaires)" style="max-width: 100%; height: auto; margin-top: 20px;"><br><br><img src="images/censure-2-website.png" alt="Untitled (pas de mousquetaires)" style="max-width: 100%; height: auto; margin-top: 20px;"><br><br><img src="images/censure-3-website.png" alt="Untitled (pas de mousquetaires)" style="max-width: 100%; height: auto; margin-top: 20px;">' 
+                info: '<strong>Untitled (pas de mousquetaires)</strong> (2025)<br>Archival video, digital alteration<br><br><em>Archival video exploration featuring digital alteration.</em><br><br><img src="images/Censure-1-website.png" alt="Untitled (pas de mousquetaires)" style="max-width: 100%; height: auto; margin-top: 20px;"><br><br><img src="images/Censure-2-website.png" alt="Untitled (pas de mousquetaires)" style="max-width: 100%; height: auto; margin-top: 20px;"><br><br><img src="images/Censure-3-website.png" alt="Untitled (pas de mousquetaires)" style="max-width: 100%; height: auto; margin-top: 20px;">' 
             },
             'sunnyside': { 
                 info: '<strong>Sunny side Up</strong> (2025)<br>Collage series, poster design<br><br><em>Presented during Le Bazar troué at Salvatore Ghent.</em>' 
@@ -202,20 +205,56 @@
         const container = document.getElementById('tab-dots');
         const display = document.getElementById('content-display');
 
+        function updateHash(mainTab, subKey = null) {
+            let hash = '#' + mainTab.toLowerCase().replace(/\s+/g, '-');
+            if (subKey) {
+                if (mainTab === 'Works') {
+                    const idx = workKeys.indexOf(subKey);
+                    if (idx !== -1) {
+                        hash += '-' + (idx + 1);
+                    } else {
+                        hash += '-' + subKey;
+                    }
+                } else {
+                    hash += '-' + subKey;
+                }
+            }
+            window.location.hash = hash;
+        }
+
         function initializeNavigation() {
             container.innerHTML = '';
-            let positions = Array.from({length: tabs.length}, () => Math.random() * (window.innerHeight - 100) + 50).sort((a, b) => a - b);
+            
+            // Combine main tabs and work subtab numbers so they scatter together on the right
+            let navItems = [
+                ...tabs.map(t => ({ type: 'tab', name: t, id: `dot-${t}` })),
+                ...workKeys.map((key, idx) => ({ type: 'work', key: key, num: idx + 1, id: `work-${key}` }))
+            ];
 
-            tabs.forEach((tabName, index) => {
-                const dot = document.createElement('div');
-                dot.className = 'dot';
-                dot.id = `dot-${tabName}`;
+            let positions = Array.from({length: navItems.length}, () => Math.random() * (window.innerHeight - 100) + 50).sort((a, b) => a - b);
+
+            navItems.forEach((item, index) => {
+                const el = document.createElement('div');
                 const minX = window.innerWidth * 0.75;
                 const maxX = window.innerWidth - 60;
-                dot.style.top = positions[index] + 'px';
-                dot.style.left = (Math.random() * (maxX - minX) + minX) + 'px';
-                dot.onclick = () => activateTab(tabName);
-                container.appendChild(dot);
+                const posX = Math.random() * (maxX - minX) + minX;
+                const posY = positions[index];
+
+                if (item.type === 'tab') {
+                    el.className = 'dot';
+                    el.id = item.id;
+                    el.style.top = posY + 'px';
+                    el.style.left = posX + 'px';
+                    el.onclick = () => activateTab(item.name);
+                } else {
+                    el.className = 'work-trigger trigger';
+                    el.id = item.id;
+                    el.style.top = posY + 'px';
+                    el.style.left = posX + 'px';
+                    el.textContent = item.num;
+                    el.onclick = () => showWork(item.key);
+                }
+                container.appendChild(el);
             });
         }
 
@@ -224,6 +263,16 @@
             const dot = document.getElementById(`dot-${tabName}`);
             if (dot) dot.classList.add('active');
             renderTab(tabName, subTabToOpen);
+
+            if (tabName === 'Contact') {
+                updateHash('Contact');
+            } else if (tabName === 'Works' && !subTabToOpen) {
+                updateHash('Works');
+            } else if (tabName === 'Collaborative projects' && !subTabToOpen) {
+                updateHash('Collaborative projects');
+            } else if (tabName === 'Text' && !subTabToOpen) {
+                updateHash('Text');
+            }
         }
 
         function switchTab(mainTab, subTab) {
@@ -247,20 +296,14 @@
                         <p>Wat ogenschijnlijk speels of absurd is, legt sociale codes bloot en test hun breekbaarheid. Het werk ontstaat in de spanning tussen controle en toeval, tussen script en improvisatie.</p>
                     </div>`;
             
-            // 2. Works Rendering (Numbered Subtabs turning into dots)
+            // 2. Works Rendering (Numbers are scattered in #tab-dots)
             } else if (tabName === 'Works') {
-                display.innerHTML = `
-                    <div class="works-nav">
-                        <span class="work-trigger trigger" id="work-residus" onclick="showWork('residus')">1</span>
-                        <span class="work-trigger trigger" id="work-waitingline" onclick="showWork('waitingline')">2</span>
-                        <span class="work-trigger trigger" id="work-boke" onclick="showWork('boke')">3</span>
-                        <span class="work-trigger trigger" id="work-celebratie" onclick="showWork('celebratie')">4</span>
-                        <span class="work-trigger trigger" id="work-abc" onclick="showWork('abc')">5</span>
-                        <span class="work-trigger trigger" id="work-untitled" onclick="showWork('untitled')">6</span>
-                        <span class="work-trigger trigger" id="work-sunnyside" onclick="showWork('sunnyside')">7</span>
-                        <span class="work-trigger trigger" id="work-metverwarring" onclick="showWork('metverwarring')">8</span>
-                    </div><div id="content-area"></div>`;
-                if(autoOpenSub) showWork(autoOpenSub);
+                display.innerHTML = `<div id="content-area"></div>`;
+                if(autoOpenSub) {
+                    showWork(autoOpenSub);
+                } else {
+                    document.getElementById('content-area').innerHTML = '';
+                }
             
             // 3. Collaborative Projects Rendering (Named Subtabs)
             } else if (tabName === 'Collaborative projects') {
@@ -287,6 +330,14 @@
 
         /* Helper Functions to handle Subtabs */
         function showWork(key) {
+            document.querySelectorAll('.dot').forEach(d => d.classList.remove('active'));
+            const workDot = document.getElementById('dot-Works');
+            if (workDot) workDot.classList.add('active');
+
+            if (!document.getElementById('content-area')) {
+                display.innerHTML = `<div id="content-area"></div>`;
+            }
+
             document.querySelectorAll('.work-trigger').forEach(t => {
                 t.className = 'work-trigger trigger';
             });
@@ -294,7 +345,10 @@
             if(el) {
                 el.classList.add('active');
             }
-            document.getElementById('content-area').innerHTML = worksData[key].info;
+            if (worksData[key]) {
+                document.getElementById('content-area').innerHTML = worksData[key].info;
+            }
+            updateHash('Works', key);
         }
 
         function showCollab(key) {
@@ -302,6 +356,7 @@
             const el = document.getElementById('collab-' + key);
             if(el) el.classList.add('active-' + key);
             document.getElementById('content-area').innerHTML = collabData[key].info;
+            updateHash('Collaborative projects', key);
         }
 
         function showText(key) {
@@ -309,14 +364,54 @@
             const el = document.getElementById('text-' + key);
             if(el) el.classList.add('active');
             document.getElementById('content-area').innerHTML = textData[key].content;
+            updateHash('Text', key);
         }
 
         entryDot.onclick = function() {
             if (!this.classList.contains('transformed')) {
                 this.classList.add('transformed');
                 initializeNavigation();
+                parseHashAndNavigate();
             }
         };
+
+        function parseHashAndNavigate() {
+            const hash = window.location.hash.substring(1);
+            if (!hash) return;
+
+            if (hash === 'contact') {
+                activateTab('Contact');
+            } else if (hash === 'works') {
+                activateTab('Works');
+            } else if (hash.startsWith('works-')) {
+                const sub = hash.replace('works-', '');
+                let workKey = sub;
+                if (!isNaN(sub)) {
+                    const idx = parseInt(sub) - 1;
+                    if (workKeys[idx]) workKey = workKeys[idx];
+                }
+                activateTab('Works', workKey);
+            } else if (hash === 'collaborative-projects' || hash === 'collaborative' || hash === 'collab') {
+                activateTab('Collaborative projects');
+            } else if (hash.startsWith('collaborative-projects-') || hash.startsWith('collab-')) {
+                const sub = hash.replace('collaborative-projects-', '').replace('collab-', '');
+                activateTab('Collaborative projects', sub);
+            } else if (hash === 'text') {
+                activateTab('Text');
+            } else if (hash.startsWith('text-')) {
+                const sub = hash.replace('text-', '');
+                activateTab('Text', sub);
+            }
+        }
+
+        // Auto-load if visiting with an existing hash
+        window.addEventListener('DOMContentLoaded', () => {
+            if (window.location.hash) {
+                entryDot.classList.add('transformed');
+                initializeNavigation();
+                parseHashAndNavigate();
+            }
+        });
     </script>
 </body>
 </html>
