@@ -62,10 +62,10 @@
         #entry-dot.transformed { background: #fff; border-color: rgb(0, 0, 255); cursor: default; }
         .dot.active { background: rgb(0, 0, 255); border-color: rgb(0, 0, 255); }
 
-        /* General Trigger Behavior (Prevents Jumping) */
+        /* General Trigger Behavior */
         .trigger { cursor: pointer; color: #000; font-weight: 400; white-space: nowrap; width: fit-content; }
         .trigger.active { text-decoration: underline; }
-        #content-area { margin-top: 30px; color: #000; font-weight: 300; line-height: 1.6; max-width: 900px; }
+        #content-area { margin-top: 30px; color: #000; font-weight: 300; line-height: 1.6; max-width: 900px; position: relative; }
 
         /* Horizontal Image Gallery Styling */
         .horizontal-gallery {
@@ -75,6 +75,7 @@
             margin-top: 25px;
             padding-bottom: 15px;
             scroll-behavior: smooth;
+            position: relative;
         }
         .horizontal-gallery img {
             height: 504px;
@@ -83,10 +84,55 @@
             object-fit: contain;
             flex-shrink: 0;
             border-radius: 2px;
+            cursor: pointer;
         }
+        /* Specific 20% larger size for Kitchen Gallery */
+        .kitchen-gallery img {
+            height: 605px;
+            max-height: 65vh;
+        }
+
         .horizontal-gallery::-webkit-scrollbar { height: 6px; }
         .horizontal-gallery::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
         .horizontal-gallery::-webkit-scrollbar-track { background: #f1f1f1; }
+
+        /* Pop-up Text Box for Image Descriptions */
+        #image-description-box {
+            display: none;
+            position: absolute;
+            top: 40px;
+            left: 20px;
+            width: 80%;
+            max-width: 650px;
+            background: #fff;
+            border: 2px solid #000;
+            padding: 25px 40px 25px 25px;
+            box-sizing: border-box;
+            z-index: 95;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        #image-description-box.active {
+            display: block;
+        }
+        #image-description-content {
+            font-size: 15px;
+            font-weight: 400;
+            line-height: 1.5;
+            color: #000;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        #close-description-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            cursor: pointer;
+            font-size: 20px;
+            font-weight: bold;
+            color: #000;
+            line-height: 1;
+            user-select: none;
+        }
 
         /* ==========================================================================
            1. CONTACT SECTION (Styling)
@@ -185,12 +231,42 @@
         const tabs = ['Contact', 'Works', 'Collaborative projects', 'Text'];
         const workKeys = ['residus', 'kitchen', 'waitingline', 'chihuahua', 'boke', 'celebratie', 'abc', 'untitled', 'sunnyside', 'metverwarring'];
 
+        /* Descriptions for Kitchen Images */
+        const kitchenDescriptions = {
+            1: "A PERSON WITH AN ALTERNATIVE STYLE: LONG, DARK HAIR, A LOT OF JEWELLERY AND A LOT OF LAYERS STACKED ON ONE ANOTHER. THIS PERSON SEEMS STRESSED OUT, THEY ARE LOOKING FOR SOMETHING. THIS IS A PERSON WHO'S FRIENDLY WHEN YOU KNOW THEM PERSONALLY BUT CAN SEEM MEAN WHEN YOU DON'T.",
+            2: "DESCRIPTION FOR KITCHEN IMAGE 2 COMING SOON...",
+            3: "DESCRIPTION FOR KITCHEN IMAGE 3 COMING SOON...",
+            4: "DESCRIPTION FOR KITCHEN IMAGE 4 COMING SOON...",
+            5: "DESCRIPTION FOR KITCHEN IMAGE 5 COMING SOON...",
+            6: "DESCRIPTION FOR KITCHEN IMAGE 6 COMING SOON...",
+            7: "DESCRIPTION FOR KITCHEN IMAGE 7 COMING SOON...",
+            8: "DESCRIPTION FOR KITCHEN IMAGE 8 COMING SOON...",
+            9: "DESCRIPTION FOR KITCHEN IMAGE 9 COMING SOON...",
+            10: "DESCRIPTION FOR KITCHEN IMAGE 10 COMING SOON..."
+        };
+
         const worksData = {
             'residus': { 
                 info: '<strong>Residus (Bartsoen)</strong> (2026)<br>In situ sound installation: obsessively tidied conference room, handmade speakers<br><br><em>A staging of presence through absence. Speakers are scattered throughout the space, emitting commonplace sounds of four invisible characters. The work uses ambient sound to trigger a hyper-awareness of the physical space and the bodies that occupy it.</em><br><br><img src="images/Bartsoen-1-website.jpg" alt="Residus (Bartsoen)" style="max-width: 100%; height: auto; margin-top: 20px;"><br><br><img src="images/Bartsoen-2-website.jpg" alt="Residus (Bartsoen)" style="max-width: 100%; height: auto; margin-top: 20px;"><br><br><img src="images/Bartsoen-5-website.jpg" alt="Residus (Bartsoen)" style="max-width: 100%; height: auto; margin-top: 20px;"><br><br><img src="images/Bartsoen-6-website.jpg" alt="Residus (Bartsoen)" style="max-width: 100%; height: auto; margin-top: 20px;">' 
             },
             'kitchen': { 
-                info: '<strong>Situation for a small kitchen and adjacent dining room with a narrow window giving on the outside.</strong> (2026)<br><br><div class="horizontal-gallery"><img src="images/situation for a kitchen-1-website.jpg" alt="Kitchen 1"><img src="images/situation for a kitchen-2-website.jpg" alt="Kitchen 2"><img src="images/situation for a kitchen-3-website.jpg" alt="Kitchen 3"><img src="images/situation for a kitchen-4-website.jpg" alt="Kitchen 4"><img src="images/situation for a kitchen-5-website.jpg" alt="Kitchen 5"><img src="images/situation for a kitchen-6-website.jpg" alt="Kitchen 6"><img src="images/situation for a kitchen-7-website.jpg" alt="Kitchen 7"><img src="images/situation for a kitchen-8-website.jpg" alt="Kitchen 8"><img src="images/situation for a kitchen-9-website.jpg" alt="Kitchen 9"><img src="images/situation for a kitchen-10-website.jpg" alt="Kitchen 10"></div>' 
+                info: `<strong>Situation for a small kitchen and adjacent dining room with a narrow window giving on the outside.</strong> (2026)<br><br>
+                <div id="image-description-box">
+                    <span id="close-description-btn" onclick="closeImageDescription()">✕</span>
+                    <div id="image-description-content"></div>
+                </div>
+                <div class="horizontal-gallery kitchen-gallery">
+                    <img src="images/situation for a kitchen-1-website.jpg" alt="Kitchen 1" onclick="showKitchenDescription(1)">
+                    <img src="images/situation for a kitchen-2-website.jpg" alt="Kitchen 2" onclick="showKitchenDescription(2)">
+                    <img src="images/situation for a kitchen-3-website.jpg" alt="Kitchen 3" onclick="showKitchenDescription(3)">
+                    <img src="images/situation for a kitchen-4-website.jpg" alt="Kitchen 4" onclick="showKitchenDescription(4)">
+                    <img src="images/situation for a kitchen-5-website.jpg" alt="Kitchen 5" onclick="showKitchenDescription(5)">
+                    <img src="images/situation for a kitchen-6-website.jpg" alt="Kitchen 6" onclick="showKitchenDescription(6)">
+                    <img src="images/situation for a kitchen-7-website.jpg" alt="Kitchen 7" onclick="showKitchenDescription(7)">
+                    <img src="images/situation for a kitchen-8-website.jpg" alt="Kitchen 8" onclick="showKitchenDescription(8)">
+                    <img src="images/situation for a kitchen-9-website.jpg" alt="Kitchen 9" onclick="showKitchenDescription(9)">
+                    <img src="images/situation for a kitchen-10-website.jpg" alt="Kitchen 10" onclick="showKitchenDescription(10)">
+                </div>` 
             },
             'waitingline': { 
                 info: '<strong>The waiting line</strong> (2026)<br>1:1 cardboard cutouts, questionnaires<br><br><em>How do we perceive? A reflection on social stereotypes and collective assumptions. Life-sized figures, viewed only from behind, generated by AI based on descriptions of people I encountered in Ghent. Spectators are invited to fill out questionnaires, speculating on the hidden lives and identities of these anonymous individuals.</em><br><br><div class="horizontal-gallery"><img src="images/wachtrij-1-website.jpeg" alt="The waiting line 1"><img src="images/wachtrij-2-website.jpeg" alt="The waiting line 2"></div>' 
@@ -249,6 +325,22 @@
         const entryDot = document.getElementById('entry-dot');
         const container = document.getElementById('tab-dots');
         const display = document.getElementById('content-display');
+
+        function showKitchenDescription(imageIndex) {
+            const box = document.getElementById('image-description-box');
+            const content = document.getElementById('image-description-content');
+            if (box && content && kitchenDescriptions[imageIndex]) {
+                content.textContent = kitchenDescriptions[imageIndex];
+                box.classList.add('active');
+            }
+        }
+
+        function closeImageDescription() {
+            const box = document.getElementById('image-description-box');
+            if (box) {
+                box.classList.remove('active');
+            }
+        }
 
         function updateHash(mainTab, subKey = null) {
             let hash = '#' + mainTab.toLowerCase().replace(/\s+/g, '-');
