@@ -39,7 +39,6 @@
         }
 
         #main-container { display: flex; width: 100%; min-height: 100vh; }
-        /* Expanded content width to use free space */
         #content-display { width: 82%; padding: 80px 60px; box-sizing: border-box; }
         
         /* The Dots Container & Elements */
@@ -59,17 +58,16 @@
             box-sizing: border-box; cursor: pointer;
             transition: background 0.3s; position: absolute; pointer-events: auto;
         }
-        #entry-dot { top: 15%; right: 5%; position: fixed; }
+        #entry-dot { top: 15%; right: 5%; position: fixed; pointer-events: auto; z-index: 101; }
         #entry-dot.transformed { background: #fff; border-color: rgb(0, 0, 255); cursor: default; }
         .dot.active { background: rgb(0, 0, 255); border-color: rgb(0, 0, 255); }
 
         /* General Trigger Behavior (Prevents Jumping) */
         .trigger { cursor: pointer; color: #000; font-weight: 400; white-space: nowrap; width: fit-content; }
         .trigger.active { text-decoration: underline; }
-        /* Expanded content-area max-width */
         #content-area { margin-top: 30px; color: #000; font-weight: 300; line-height: 1.6; max-width: 900px; }
 
-        /* Horizontal Image Gallery Styling (Images made 20% bigger: 504px) */
+        /* Horizontal Image Gallery Styling */
         .horizontal-gallery {
             display: flex;
             gap: 20px;
@@ -86,17 +84,9 @@
             flex-shrink: 0;
             border-radius: 2px;
         }
-        /* Custom subtle scrollbar for horizontal gallery */
-        .horizontal-gallery::-webkit-scrollbar {
-            height: 6px;
-        }
-        .horizontal-gallery::-webkit-scrollbar-thumb {
-            background: #ccc;
-            border-radius: 3px;
-        }
-        .horizontal-gallery::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
+        .horizontal-gallery::-webkit-scrollbar { height: 6px; }
+        .horizontal-gallery::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+        .horizontal-gallery::-webkit-scrollbar-track { background: #f1f1f1; }
 
         /* ==========================================================================
            1. CONTACT SECTION (Styling)
@@ -122,14 +112,13 @@
             align-items: center; 
         }
         
-        /* Work Subtab Numbers (Hidden by default, shown when Works tab is active) */
         .work-trigger {
             cursor: pointer; 
             color: #000; 
             font-weight: 400; 
             width: 32px; 
             height: 32px; 
-            display: none; /* Only appears on Works tab */
+            display: none; 
             align-items: center; 
             justify-content: center; 
             font-size: 22px; 
@@ -138,9 +127,7 @@
             position: absolute; 
             pointer-events: auto;
         }
-        .work-trigger.visible {
-            display: inline-flex;
-        }
+        .work-trigger.visible { display: inline-flex; }
         .work-trigger.active {
             background: #000; 
             border: 1.8px solid #000; 
@@ -153,7 +140,6 @@
         .collab-trigger.active-braida { text-decoration: underline; }
         .collab-trigger.active-rotte { color: brown; }
 
-        /* Special 'o' for Le bazar troué */
         .filled-o { position: relative; }
         .collab-trigger.active-troue .filled-o::before {
             content: ""; position: absolute; width: 7px; height: 7px;
@@ -166,12 +152,11 @@
            ========================================================================== */
         .subnav-container { display: flex; flex-direction: column; gap: 15px; margin-bottom: 50px; }
         
-        /* Links between Work and Text */
         .link-to-work { color: #ea5bf6; text-decoration: underline; cursor: pointer; }
         .link-to-text { color: rgb(0, 0, 255); text-decoration: underline; cursor: pointer; }
 
         /* ==========================================================================
-           4. THANK YOU NOTE (Right column, directly under navigation dots)
+           4. THANK YOU NOTE
            ========================================================================== */
         #thank-you-note {
             position: absolute;
@@ -198,12 +183,8 @@
 
     <script>
         const tabs = ['Contact', 'Works', 'Collaborative projects', 'Text'];
-        // Updated workKeys order matching your numbering schema (1 to 11, skipping 6)
         const workKeys = ['residus', 'kitchen', 'waitingline', 'chihuahua', 'boke', 'celebratie', 'abc', 'untitled', 'sunnyside', 'metverwarring'];
 
-        /* ==========================================================================
-           DATA: WORKS CONTENT
-           ========================================================================== */
         const worksData = {
             'residus': { 
                 info: '<strong>Residus (Bartsoen)</strong> (2026)<br>In situ sound installation: obsessively tidied conference room, handmade speakers<br><br><em>A staging of presence through absence. Speakers are scattered throughout the space, emitting commonplace sounds of four invisible characters. The work uses ambient sound to trigger a hyper-awareness of the physical space and the bodies that occupy it.</em><br><br><img src="images/Bartsoen-1-website.jpg" alt="Residus (Bartsoen)" style="max-width: 100%; height: auto; margin-top: 20px;"><br><br><img src="images/Bartsoen-2-website.jpg" alt="Residus (Bartsoen)" style="max-width: 100%; height: auto; margin-top: 20px;"><br><br><img src="images/Bartsoen-5-website.jpg" alt="Residus (Bartsoen)" style="max-width: 100%; height: auto; margin-top: 20px;"><br><br><img src="images/Bartsoen-6-website.jpg" alt="Residus (Bartsoen)" style="max-width: 100%; height: auto; margin-top: 20px;">' 
@@ -237,18 +218,12 @@
             }
         };
 
-        /* ==========================================================================
-           DATA: THANK YOU NOTES (For specific works)
-           ========================================================================== */
         const thanksData = {
             'waitingline': 'Thanks to the visitors to answer the questionnaire',
             'boke': 'Thanks to Puck van der Poel, Merel Van den Eynde, Oona Antonissen, Rinke Van Der Veen, Elisa Palm, Freek Lannoo, Thomas Joostens',
             'abc': 'Thanks to Malou Legrand, Puck van der Poel, Rinke Van Der Veen'
         };
 
-        /* ==========================================================================
-           DATA: COLLABORATIVE PROJECTS CONTENT
-           ========================================================================== */
         const collabData = {
             'troue': { 
                 info: '<strong>Le bazar troué</strong> (2025)<br>Group exhibition with works from <strong>Ibe De Cat, Merel Van den Eynde, Puck van der Poel, Louis Locus, Elisa Palm, Willem Roekaers and Clémence Ledent</strong><br><br><em>réflections illustrées</em>' 
@@ -261,9 +236,6 @@
             }
         };
 
-        /* ==========================================================================
-           DATA: TEXT CONTENT
-           ========================================================================== */
         const textData = {
             'denkbeeldig': { title: 'De denkbeeldige ruimte', content: 'Text for De denkbeeldige ruimte...' },
             'shopsign': { title: 'De shopsign', content: 'De shopsign content...' },
@@ -274,9 +246,6 @@
             'tafelgebeuren': { title: 'Het rigiditeitsgehalte van een tafelgebeuren', content: 'Text for tafelgebeuren...' }
         };
 
-        /* ==========================================================================
-           CORE LOGIC: NAVIGATION & RENDERING
-           ========================================================================== */
         const entryDot = document.getElementById('entry-dot');
         const container = document.getElementById('tab-dots');
         const display = document.getElementById('content-display');
@@ -326,7 +295,7 @@
 
                 do {
                     overlapping = false;
-                    posX = Math.random() * (container.clientWidth - 70) + 10;
+                    posX = Math.random() * (window.innerWidth * 0.15 - 40) + 10;
                     posY = Math.random() * (window.innerHeight - 180) + 40;
 
                     for (let p of placedCoordinates) {
@@ -347,13 +316,13 @@
                     el.className = 'dot';
                     el.id = item.id;
                     el.style.top = posY + 'px';
-                    el.style.left = posX + 'px';
+                    el.style.right = posX + 'px';
                     el.onclick = () => activateTab(item.name);
                 } else {
                     el.className = 'work-trigger trigger';
                     el.id = item.id;
                     el.style.top = posY + 'px';
-                    el.style.left = posX + 'px';
+                    el.style.right = posX + 'px';
                     el.textContent = item.num;
                     el.onclick = () => showWork(item.key);
                 }
@@ -366,7 +335,9 @@
         }
 
         function activateTab(tabName, subTabToOpen = null) {
-            document.querySelectorAll('.dot').forEach(d => d.classList.remove('active'));
+            document.querySelectorAll('.dot').forEach(d => {
+                if(d.id !== 'entry-dot') d.classList.remove('active');
+            });
             const dot = document.getElementById(`dot-${tabName}`);
             if (dot) dot.classList.add('active');
 
@@ -425,7 +396,9 @@
         }
 
         function showWork(key) {
-            document.querySelectorAll('.dot').forEach(d => d.classList.remove('active'));
+            document.querySelectorAll('.dot').forEach(d => {
+                if(d.id !== 'entry-dot') d.classList.remove('active');
+            });
             const workDot = document.getElementById('dot-Works');
             if (workDot) workDot.classList.add('active');
 
