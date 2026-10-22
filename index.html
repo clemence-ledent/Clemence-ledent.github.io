@@ -39,7 +39,8 @@
         }
 
         #main-container { display: flex; width: 100%; min-height: 100vh; }
-        #content-display { width: 75%; padding: 80px 60px; box-sizing: border-box; }
+        /* Expanded content width to use free space */
+        #content-display { width: 82%; padding: 80px 60px; box-sizing: border-box; }
         
         /* The Dots */
         .dot {
@@ -48,14 +49,15 @@
             box-sizing: border-box; cursor: pointer;
             transition: background 0.3s; position: fixed; z-index: 100;
         }
-        #entry-dot { top: 15%; right: 10%; }
+        #entry-dot { top: 15%; right: 5%; }
         #entry-dot.transformed { background: #fff; border-color: rgb(0, 0, 255); cursor: default; }
         .dot.active { background: rgb(0, 0, 255); border-color: rgb(0, 0, 255); }
 
         /* General Trigger Behavior (Prevents Jumping) */
         .trigger { cursor: pointer; color: #000; font-weight: 400; white-space: nowrap; width: fit-content; }
         .trigger.active { text-decoration: underline; }
-        #content-area { margin-top: 30px; color: #000; font-weight: 300; line-height: 1.6; max-width: 700px; }
+        /* Expanded content-area max-width */
+        #content-area { margin-top: 30px; color: #000; font-weight: 300; line-height: 1.6; max-width: 900px; }
 
         /* ==========================================================================
            1. CONTACT SECTION (Styling)
@@ -66,7 +68,7 @@
             color: #000; 
             margin-top: 40px; 
             line-height: 1.6; 
-            max-width: 700px; 
+            max-width: 900px; 
         }
 
         /* ==========================================================================
@@ -81,14 +83,14 @@
             align-items: center; 
         }
         
-        /* Work Subtab Numbers & Active Dot Transformation (Scattered on the right) */
+        /* Work Subtab Numbers (Hidden by default, shown when Works tab is active) */
         .work-trigger {
             cursor: pointer; 
             color: #000; 
             font-weight: 400; 
             width: 32px; 
             height: 32px; 
-            display: inline-flex; 
+            display: none; /* Only appears on Works tab */
             align-items: center; 
             justify-content: center; 
             font-size: 22px; 
@@ -96,6 +98,9 @@
             transition: none; 
             position: fixed; 
             z-index: 100;
+        }
+        .work-trigger.visible {
+            display: inline-flex;
         }
         .work-trigger.active {
             background: #000; 
@@ -125,6 +130,22 @@
         /* Links between Work and Text */
         .link-to-work { color: #ea5bf6; text-decoration: underline; cursor: pointer; }
         .link-to-text { color: rgb(0, 0, 255); text-decoration: underline; cursor: pointer; }
+
+        /* ==========================================================================
+           4. THANK YOU NOTE (Right Lower Corner)
+           ========================================================================== */
+        #thank-you-note {
+            position: fixed;
+            bottom: 30px;
+            right: 40px;
+            font-size: 14px;
+            font-style: italic;
+            color: #000;
+            max-width: 300px;
+            text-align: right;
+            z-index: 100;
+            line-height: 1.4;
+        }
     </style>
 </head>
 <body>
@@ -136,12 +157,15 @@
         <div id="content-display"></div>
     </div>
 
+    <!-- Right lower corner thank you note -->
+    <div id="thank-you-note"></div>
+
     <script>
         const tabs = ['Contact', 'Works', 'Collaborative projects', 'Text'];
         const workKeys = ['residus', 'waitingline', 'boke', 'celebratie', 'abc', 'untitled', 'sunnyside', 'metverwarring'];
 
         /* ==========================================================================
-           DATA: WORKS CONTENT (Includes title, year, technical description, short explanation)
+           DATA: WORKS CONTENT
            ========================================================================== */
         const worksData = {
             'residus': { 
@@ -160,7 +184,7 @@
                 info: '<strong>A, B, C</strong> (2025)<br>Video performance, script<br><br><em>Research on entropy (tested in a controlled environment). Seated at a table, one character attempts to contain the rising tension between the two others.</em><br><br><img src="images/ABC-1-website.png" alt="A, B, C" style="max-width: 100%; height: auto; margin-top: 20px;"><br><br><img src="images/ABC-2-website.png" alt="A, B, C" style="max-width: 100%; height: auto; margin-top: 20px;"><br><br><img src="images/ABC-3-website.png" alt="A, B, C" style="max-width: 100%; height: auto; margin-top: 20px;">' 
             },
             'untitled': { 
-                info: '<strong>Untitled (pas de mousquetaires)</strong> (2025)<br>Archival video, digital alteration<br><br><em>Archival video exploration featuring digital alteration.</em><br><br><img src="images/Censure-1-website.png" alt="Untitled (pas de mousquetaires)" style="max-width: 100%; height: auto; margin-top: 20px;"><br><br><img src="images/Censure-2-website.png" alt="Untitled (pas de mousquetaires)" style="max-width: 100%; height: auto; margin-top: 20px;"><br><br><img src="images/Censure-3-website.png" alt="Untitled (pas de mousquetaires)" style="max-width: 100%; height: auto; margin-top: 20px;">' 
+                info: '<strong>Untitled (pas de mousquetaires)</strong> (2025)<br>Archival video, digital alteration<br><br><em>Archival video exploration featuring digital alteration.</em><br><br><img src="images/Censure-1-website.png" alt="Untitled (pas de mousquetaires)" style="max-width: 100%; height: auto; margin-top: 20px;"><br><br><img src="images/censure-2-website.png" alt="Untitled (pas de mousquetaires)" style="max-width: 100%; height: auto; margin-top: 20px;"><br><br><img src="images/censure-3-website.png" alt="Untitled (pas de mousquetaires)" style="max-width: 100%; height: auto; margin-top: 20px;">' 
             },
             'sunnyside': { 
                 info: '<strong>Sunny side Up</strong> (2025)<br>Collage series, poster design<br><br><em>Presented during Le Bazar troué at Salvatore Ghent.</em>' 
@@ -168,6 +192,15 @@
             'metverwarring': { 
                 info: '<strong>Met verwarring in de wachtruimte</strong> (2024)<br>Performance, mise-en-scène<br><br><em>Immersive performance navigating around a counter. Participants wear jackets blending them into the architecture. Guided through a cycle of calculated confusion, the participants get stuck in a loop staging the impossibility of truly accessing the "other side".</em>' 
             }
+        };
+
+        /* ==========================================================================
+           DATA: THANK YOU NOTES (For specific works)
+           ========================================================================== */
+        const thanksData = {
+            'waitingline': 'Thanks to the visitors for fill in the questionnaire',
+            'boke': 'Thanks to Puck van der Poel, Merel Van den Eynde, Oona Antonissen, Rinke Van Der Veen, Elisa Palm, Freek Lannoo, Thomas Joostens',
+            'abc': 'Thanks to Malou Legrand, Puck van der Poel, Rinke Van Der Veen'
         };
 
         /* ==========================================================================
@@ -204,17 +237,15 @@
         const entryDot = document.getElementById('entry-dot');
         const container = document.getElementById('tab-dots');
         const display = document.getElementById('content-display');
+        const thankYouBox = document.getElementById('thank-you-note');
 
         function updateHash(mainTab, subKey = null) {
             let hash = '#' + mainTab.toLowerCase().replace(/\s+/g, '-');
             if (subKey) {
                 if (mainTab === 'Works') {
                     const idx = workKeys.indexOf(subKey);
-                    if (idx !== -1) {
-                        hash += '-' + (idx + 1);
-                    } else {
-                        hash += '-' + subKey;
-                    }
+                    if (idx !== -1) hash += '-' + (idx + 1);
+                    else hash += '-' + subKey;
                 } else {
                     hash += '-' + subKey;
                 }
@@ -222,10 +253,18 @@
             window.location.hash = hash;
         }
 
+        function setThankYouNote(key = null) {
+            if (key && thanksData[key]) {
+                thankYouBox.innerHTML = thanksData[key];
+            } else {
+                thankYouBox.innerHTML = '';
+            }
+        }
+
         function initializeNavigation() {
             container.innerHTML = '';
             
-            // Combine main tabs and work subtab numbers so they scatter together on the right
+            // Scatter items in narrower right area
             let navItems = [
                 ...tabs.map(t => ({ type: 'tab', name: t, id: `dot-${t}` })),
                 ...workKeys.map((key, idx) => ({ type: 'work', key: key, num: idx + 1, id: `work-${key}` }))
@@ -235,8 +274,8 @@
 
             navItems.forEach((item, index) => {
                 const el = document.createElement('div');
-                const minX = window.innerWidth * 0.75;
-                const maxX = window.innerWidth - 60;
+                const minX = window.innerWidth * 0.84; // Narrower range
+                const maxX = window.innerWidth - 45;
                 const posX = Math.random() * (maxX - minX) + minX;
                 const posY = positions[index];
 
@@ -262,21 +301,22 @@
             document.querySelectorAll('.dot').forEach(d => d.classList.remove('active'));
             const dot = document.getElementById(`dot-${tabName}`);
             if (dot) dot.classList.add('active');
+
+            // Show or hide work numbers depending on active tab
+            document.querySelectorAll('.work-trigger').forEach(wt => {
+                if (tabName === 'Works') wt.classList.add('visible');
+                else wt.classList.remove('visible');
+            });
+
+            // Clear thank you note when changing main tabs
+            setThankYouNote(null);
+
             renderTab(tabName, subTabToOpen);
 
-            if (tabName === 'Contact') {
-                updateHash('Contact');
-            } else if (tabName === 'Works' && !subTabToOpen) {
-                updateHash('Works');
-            } else if (tabName === 'Collaborative projects' && !subTabToOpen) {
-                updateHash('Collaborative projects');
-            } else if (tabName === 'Text' && !subTabToOpen) {
-                updateHash('Text');
-            }
-        }
-
-        function switchTab(mainTab, subTab) {
-            activateTab(mainTab, subTab);
+            if (tabName === 'Contact') updateHash('Contact');
+            else if (tabName === 'Works' && !subTabToOpen) updateHash('Works');
+            else if (tabName === 'Collaborative projects' && !subTabToOpen) updateHash('Collaborative projects');
+            else if (tabName === 'Text' && !subTabToOpen) updateHash('Text');
         }
 
         function renderTab(tabName, autoOpenSub = null) {
@@ -296,7 +336,7 @@
                         <p>Wat ogenschijnlijk speels of absurd is, legt sociale codes bloot en test hun breekbaarheid. Het werk ontstaat in de spanning tussen controle en toeval, tussen script en improvisatie.</p>
                     </div>`;
             
-            // 2. Works Rendering (Numbers are scattered in #tab-dots)
+            // 2. Works Rendering
             } else if (tabName === 'Works') {
                 display.innerHTML = `<div id="content-area"></div>`;
                 if(autoOpenSub) {
@@ -305,7 +345,7 @@
                     document.getElementById('content-area').innerHTML = '';
                 }
             
-            // 3. Collaborative Projects Rendering (Named Subtabs)
+            // 3. Collaborative Projects Rendering
             } else if (tabName === 'Collaborative projects') {
                 display.innerHTML = `
                     <div class="works-nav">
@@ -334,24 +374,28 @@
             const workDot = document.getElementById('dot-Works');
             if (workDot) workDot.classList.add('active');
 
+            // Make sure numbers are visible
+            document.querySelectorAll('.work-trigger').forEach(wt => wt.classList.add('visible'));
+
             if (!document.getElementById('content-area')) {
                 display.innerHTML = `<div id="content-area"></div>`;
             }
 
-            document.querySelectorAll('.work-trigger').forEach(t => {
-                t.className = 'work-trigger trigger';
-            });
+            document.querySelectorAll('.work-trigger').forEach(t => t.classList.remove('active'));
             const el = document.getElementById('work-' + key);
-            if(el) {
-                el.classList.add('active');
-            }
+            if(el) el.classList.add('active');
+
             if (worksData[key]) {
                 document.getElementById('content-area').innerHTML = worksData[key].info;
             }
+
+            // Set thank-you note for this work
+            setThankYouNote(key);
             updateHash('Works', key);
         }
 
         function showCollab(key) {
+            setThankYouNote(null);
             document.querySelectorAll('.collab-trigger').forEach(t => t.className = 'collab-trigger trigger');
             const el = document.getElementById('collab-' + key);
             if(el) el.classList.add('active-' + key);
@@ -360,6 +404,7 @@
         }
 
         function showText(key) {
+            setThankYouNote(null);
             document.querySelectorAll('.subnav-container .trigger').forEach(t => t.classList.remove('active'));
             const el = document.getElementById('text-' + key);
             if(el) el.classList.add('active');
