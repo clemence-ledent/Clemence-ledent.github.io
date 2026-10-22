@@ -42,14 +42,24 @@
         /* Expanded content width to use free space */
         #content-display { width: 82%; padding: 80px 60px; box-sizing: border-box; }
         
-        /* The Dots */
+        /* The Dots Container & Elements */
+        #tab-dots {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 18%;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 100;
+        }
+
         .dot {
             width: 32px; height: 32px; border-radius: 50%;
             background: #000; border: 1.8px solid #000;
             box-sizing: border-box; cursor: pointer;
-            transition: background 0.3s; position: fixed; z-index: 100;
+            transition: background 0.3s; position: absolute; pointer-events: auto;
         }
-        #entry-dot { top: 15%; right: 5%; }
+        #entry-dot { top: 15%; right: 5%; position: fixed; }
         #entry-dot.transformed { background: #fff; border-color: rgb(0, 0, 255); cursor: default; }
         .dot.active { background: rgb(0, 0, 255); border-color: rgb(0, 0, 255); }
 
@@ -59,7 +69,7 @@
         /* Expanded content-area max-width */
         #content-area { margin-top: 30px; color: #000; font-weight: 300; line-height: 1.6; max-width: 900px; }
 
-        /* Horizontal Image Gallery Styling */
+        /* Horizontal Image Gallery Styling (Images made 20% bigger: 504px) */
         .horizontal-gallery {
             display: flex;
             gap: 20px;
@@ -69,8 +79,8 @@
             scroll-behavior: smooth;
         }
         .horizontal-gallery img {
-            height: 420px;
-            max-height: 50vh;
+            height: 504px;
+            max-height: 55vh;
             width: auto;
             object-fit: contain;
             flex-shrink: 0;
@@ -125,8 +135,8 @@
             font-size: 22px; 
             box-sizing: border-box;
             transition: none; 
-            position: fixed; 
-            z-index: 100;
+            position: absolute; 
+            pointer-events: auto;
         }
         .work-trigger.visible {
             display: inline-flex;
@@ -161,21 +171,19 @@
         .link-to-text { color: rgb(0, 0, 255); text-decoration: underline; cursor: pointer; }
 
         /* ==========================================================================
-           4. THANK YOU NOTE (Right Lower Corner with safe margins)
+           4. THANK YOU NOTE (Right column, directly under navigation dots)
            ========================================================================== */
         #thank-you-note {
-            position: fixed;
-            bottom: 25px;
-            right: 0;
-            padding-right: 260px; /* Safe distance from side navigation dots/numbers */
-            font-size: 14px;
+            position: absolute;
+            bottom: 30px;
+            right: 20px;
+            left: 20px;
+            font-size: 13px;
             font-style: italic;
             color: #000;
-            max-width: 600px;
             text-align: right;
-            z-index: 90;
             line-height: 1.4;
-            pointer-events: none; /* Allows clicks to pass through if needed */
+            pointer-events: none;
         }
     </style>
 </head>
@@ -187,9 +195,6 @@
     <div id="main-container">
         <div id="content-display"></div>
     </div>
-
-    <!-- Right lower corner thank you note -->
-    <div id="thank-you-note"></div>
 
     <script>
         const tabs = ['Contact', 'Works', 'Collaborative projects', 'Text'];
@@ -268,7 +273,6 @@
         const entryDot = document.getElementById('entry-dot');
         const container = document.getElementById('tab-dots');
         const display = document.getElementById('content-display');
-        const thankYouBox = document.getElementById('thank-you-note');
 
         function updateHash(mainTab, subKey = null) {
             let hash = '#' + mainTab.toLowerCase().replace(/\s+/g, '-');
@@ -285,6 +289,12 @@
         }
 
         function setThankYouNote(key = null) {
+            let thankYouBox = document.getElementById('thank-you-note');
+            if (!thankYouBox) {
+                thankYouBox = document.createElement('div');
+                thankYouBox.id = 'thank-you-note';
+                container.appendChild(thankYouBox);
+            }
             if (key && thanksData[key]) {
                 thankYouBox.innerHTML = thanksData[key];
             } else {
@@ -295,20 +305,37 @@
         function initializeNavigation() {
             container.innerHTML = '';
             
-            // Scatter items in narrower right area
             let navItems = [
                 ...tabs.map(t => ({ type: 'tab', name: t, id: `dot-${t}` })),
                 ...workKeys.map((key, idx) => ({ type: 'work', key: key, num: idx + 1, id: `work-${key}` }))
             ];
 
-            let positions = Array.from({length: navItems.length}, () => Math.random() * (window.innerHeight - 100) + 50).sort((a, b) => a - b);
-
-            navItems.forEach((item, index) => {
+            let placedCoordinates = [];
+            
+            navItems.forEach((item) => {
                 const el = document.createElement('div');
-                const minX = window.innerWidth * 0.84; // Narrower range
-                const maxX = window.innerWidth - 45;
-                const posX = Math.random() * (maxX - minX) + minX;
-                const posY = positions[index];
+                let posX, posY, overlapping;
+                let attempts = 0;
+
+                // Ensure items never overlap with each other (preventing numbers from hiding under dots)
+                do {
+                    overlapping = false;
+                    posX = Math.random() * (container.clientWidth - 70) + 10;
+                    posY = Math.random() * (window.innerHeight - 180) + 40;
+
+                    for (let p of placedCoordinates) {
+                        let dx = p.x - posX;
+                        let dy = p.y - posY;
+                        let distance = Math.sqrt(dx * dx + dy * dy);
+                        if (distance < 50) { // Minimum spacing to prevent overlaps
+                            overlapping = true;
+                            break;
+                        }
+                    }
+                    attempts++;
+                } while (overlapping && attempts < 50);
+
+                placedCoordinates.push({ x: posX, y: posY });
 
                 if (item.type === 'tab') {
                     el.className = 'dot';
@@ -326,6 +353,11 @@
                 }
                 container.appendChild(el);
             });
+
+            // Re-append the thank-you note container at the bottom of the right column
+            const thankYouBox = document.createElement('div');
+            thankYouBox.id = 'thank-you-note';
+            container.appendChild(thankYouBox);
         }
 
         function activateTab(tabName, subTabToOpen = null) {
@@ -361,12 +393,8 @@
                         <div>ledent.clemence@gmail.com</div>
                     </div>
                     <div class="contact-bio">
-                        <p>Clémence Ledent explores the invisible scripts and social codes that define our daily behaviour. Informed by her background in architecture, she examines space, function, and the impact they have on the body. Her practice is scenario-based: each project begins with an autopsy of the structures that determine how we move, wait, listen, or act. Echoing Nathalie Sarraute’s notion
-of tropisms, she seeks to capture the minute, imperceptible movements beneath the surface,
-blurring the lines between human agency and ingrained automatisms.</p>
-                        <p>The concept of ‘presence in absence’ is central to her work. By underlining the subtle sounds
-embedded in our daily gestures, or by deconstructing those gestures into singular happenings, Ledent shifts the spectator into an almost voyeuristic position toward how we carry ourselves. What appears playful or absurd ultimately reveals the orchestrated fragility of how we live with
-and alongside one another.</p>
+                        <p>Clémence Ledent explores the invisible scripts and social codes that define our daily behaviour. Informed by her background in architecture, she examines space, function, and the impact they have on the body. Her practice is scenario-based: each project begins with an autopsy of the structures that determine how we move, wait, listen, or act. Echoing Nathalie Sarraute’s notion of tropisms, she seeks to capture the minute, imperceptible movements beneath the surface, blurring the lines between human agency and ingrained automatisms.</p>
+                        <p>The concept of ‘presence in absence’ is central to her work. By underlining the subtle sounds embedded in our daily gestures, or by deconstructing those gestures into singular happenings, Ledent shifts the spectator into an almost voyeuristic position toward how we carry ourselves. What appears playful or absurd ultimately reveals the orchestrated fragility of how we live with and alongside one another.</p>
                     </div>`;
             
             // 2. Works Rendering
