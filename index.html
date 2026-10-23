@@ -126,12 +126,17 @@
             font-weight: 400;
             line-height: 1.6;
             color: #000;
-            text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-        /* Overrides uppercase for bracketed notes */
-        #image-description-content .lowercase-note {
+        .main-desc {
+            text-transform: uppercase;
+            margin-left: 20px; /* Insets/indents the uppercase text */
+            margin-bottom: 10px;
+        }
+        .lowercase-note {
             text-transform: lowercase;
+            display: block;
+            margin-top: 5px;
         }
         #close-description-btn {
             position: absolute;
