@@ -67,21 +67,20 @@
         .trigger.active { text-decoration: underline; }
         #content-area { margin-top: 0; color: #000; font-weight: 300; line-height: 1.6; max-width: 900px; position: relative; }
 
-        /* Kitchen Gallery Grid (Full images visible without trimming) */
+        /* Kitchen Grid (2 columns, transparent background, bigger images) */
         .kitchen-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
             margin-top: 25px;
         }
         .kitchen-grid img {
             width: 100%;
             height: auto;
-            max-height: 320px;
             object-fit: contain;
             cursor: pointer;
             border-radius: 2px;
-            background: #fafafa;
+            background: transparent;
         }
 
         /* Horizontal Image Gallery Styling for other tabs */
@@ -247,7 +246,7 @@
         <div id="content-display"></div>
     </div>
 
-    <!-- Centered Pop-up Text Box for Kitchen Image Descriptions -->
+    <!-- Centered Pop-up Text Box for Image Descriptions -->
     <div id="image-description-box">
         <span id="close-description-btn" onclick="closeImageDescription()">✕</span>
         <div id="image-description-content"></div>
@@ -298,7 +297,7 @@
                 info: '<strong>Boke kaas</strong> (2026)<br>Video performance<br><br><em>Three characters are making and eating a cheese sandwich. They stare just past the camera.</em><br><br><img src="images/boke-kaas-1-website.jpg" alt="Boke Kaas" style="max-width: 100%; height: auto; margin-top: 20px;"><br><br><img src="images/boke-kaas-2-website.jpg" alt="Boke Kaas" style="max-width: 100%; height: auto; margin-top: 20px;"><br><br><img src="images/boke-kaas-3-website.jpg" alt="Boke Kaas" style="max-width: 100%; height: auto; margin-top: 20px;">' 
             },
             'celebratie': { 
-                info: '<strong>celebratie compagnons</strong> (2026)<br>Sculptural installation<br><br><em>Curly ornaments that wish to celebrate the space.</em><br><br><video src="other/ccvideo" autoplay loop muted playsinline style="max-width: 650px; width: 100%; height: auto; margin-top: 20px; border-radius: 2px;"></video>' 
+                info: '<strong>celebratie compagnons</strong> (2026)<br>Sculptural installation<br><br><em>Curly ornaments that wish to celebrate the space.</em><br><br><video src="other/cc.mp4" autoplay loop muted playsinline style="max-width: 650px; width: 100%; height: auto; margin-top: 20px; border-radius: 2px;"></video>' 
             },
             'abc': { 
                 info: '<strong>A, B, C</strong> (2025)<br>Video performance, script<br><br><em>Research on entropy (tested in a controlled environment). Seated at a table, one character attempts to contain the rising tension between the two others.</em><br><br><img src="images/ABC-1-website.png" alt="A, B, C" style="max-width: 100%; height: auto; margin-top: 20px;"><br><br><img src="images/ABC-2-website.png" alt="A, B, C" style="max-width: 100%; height: auto; margin-top: 20px;"><br><br><img src="images/ABC-3-website.png" alt="A, B, C" style="max-width: 100%; height: auto; margin-top: 20px;">' 
@@ -351,11 +350,8 @@
                     if (audioTimerInterval) clearInterval(audioTimerInterval);
                     audioTimerInterval = setInterval(updateAudioControls, 500);
                 }).catch(e => {
-                    console.log("Autoplay restriction or missing file:", e);
-                    let thankYouBox = document.getElementById('thank-you-note');
-                    if (thankYouBox) {
-                        thankYouBox.innerHTML = `<span style="cursor:pointer; text-decoration:underline;" onclick="residusAudio.play()">Click to play audio</span>`;
-                    }
+                    console.log("Autoplay waiting for user interaction:", e);
+                    updateAudioControls();
                 });
             } else {
                 if (residusAudio) {
@@ -371,21 +367,26 @@
             if (!residusAudio) return;
             let current = formatTime(residusAudio.currentTime);
             let duration = isNaN(residusAudio.duration) ? "0:00" : formatTime(residusAudio.duration);
+            let isPlaying = !residusAudio.paused;
             
             let thankYouBox = document.getElementById('thank-you-note');
             if (thankYouBox) {
                 thankYouBox.innerHTML = `
                     <div style="display: flex; align-items: center; justify-content: flex-end; gap: 10px;">
                         <span id="audio-timer">${current} / ${duration}</span>
-                        <div id="audio-mute-dot" class="dot" style="position: static; width: 32px; height: 32px; background: ${residusAudio.muted ? '#000' : '#fff'}; border: 1.8px solid #000; cursor: pointer;" onclick="toggleAudioMute()" title="Mute/Unmute"></div>
+                        <div id="audio-play-dot" class="dot" style="position: static; width: 32px; height: 32px; background: ${isPlaying ? '#000' : '#fff'}; border: 1.8px solid #000; cursor: pointer;" onclick="toggleAudioPlay()" title="Play/Pause"></div>
                     </div>
                 `;
             }
         }
 
-        function toggleAudioMute() {
+        function toggleAudioPlay() {
             if (residusAudio) {
-                residusAudio.muted = !residusAudio.muted;
+                if (residusAudio.paused) {
+                    residusAudio.play();
+                } else {
+                    residusAudio.pause();
+                }
                 updateAudioControls();
             }
         }
@@ -396,7 +397,7 @@
             return m + ":" + (s < 10 ? "0" : "") + s;
         }
 
-        /* Waiting Line Draggable Images Handler */
+        /* Waiting Line Draggable Images Handler (placed left from thank you note, all next to each other) */
         function initWaitingLineImages() {
             let layer = document.getElementById('draggable-images-layer');
             if (!layer) {
@@ -416,9 +417,10 @@
                     img.src = 'other/6.png';
                     img.className = 'draggable-waiting-img';
                     img.style.position = 'absolute';
-                    img.style.left = (150 + (i * 45)) + 'px';
-                    img.style.top = (250 + ((i % 3) * 110)) + 'px';
-                    img.style.width = '150px';
+                    // Positioned side-by-side on the left side of the screen
+                    img.style.left = (60 + (i * 90)) + 'px';
+                    img.style.top = '500px';
+                    img.style.width = '80px';
                     img.style.height = 'auto';
                     img.style.cursor = 'grab';
                     img.style.pointerEvents = 'auto';
