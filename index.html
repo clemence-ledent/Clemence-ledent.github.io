@@ -63,19 +63,21 @@
         .dot.active { background: rgb(0, 0, 255); border-color: rgb(0, 0, 255); }
 
         /* General Trigger Behavior & Harmonized Top Margins */
-        .trigger { cursor: pointer; color: #000; font-weight: 400; white-space: nowrap; width: fit-content; }
+        .trigger { cursor: pointer; color: #000; font-weight: 400; white-space: nowrap; width: fit-content; text-decoration: none; }
         .trigger.active { text-decoration: underline; }
         #content-area { margin-top: 0; color: #000; font-weight: 300; line-height: 1.6; max-width: 900px; position: relative; }
 
-        /* Stacked Kitchen Images (20% bigger footprint via max-height/width) */
-        .kitchen-stack img {
-            max-width: 100%;
-            max-height: 72vh;
-            height: auto;
-            width: auto;
-            object-fit: contain;
+        /* Kitchen Gallery Grid */
+        .kitchen-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
             margin-top: 25px;
-            display: block;
+        }
+        .kitchen-grid img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
             cursor: pointer;
             border-radius: 2px;
         }
@@ -130,7 +132,7 @@
         }
         .main-desc {
             text-transform: uppercase;
-            margin-left: 20px; /* Insets/indents the uppercase text */
+            margin-left: 20px;
             margin-bottom: 10px;
         }
         .lowercase-note {
@@ -198,13 +200,11 @@
             color: transparent; 
         }
 
-        /* Collaborative Projects Styling */
-        .collab-trigger.active-troue { text-decoration: underline; }
-        .collab-trigger.active-braida { text-decoration: underline; }
-        .collab-trigger.active-rotte { color: brown; }
+        /* Collaborative Projects Styling - all underlined when active */
+        .collab-trigger.active { text-decoration: underline; color: #000; }
 
         .filled-o { position: relative; }
-        .collab-trigger.active-troue .filled-o::before {
+        .collab-trigger.active .filled-o::before {
             content: ""; position: absolute; width: 7px; height: 7px;
             background: #000; border-radius: 50%; top: 55%; left: 50%;
             transform: translate(-50%, -50%); z-index: -1;
@@ -219,7 +219,7 @@
         .link-to-text { color: rgb(0, 0, 255); text-decoration: underline; cursor: pointer; }
 
         /* ==========================================================================
-           4. THANK YOU NOTE
+           4. THANK YOU NOTE & AUDIO PLAYER
            ========================================================================== */
         #thank-you-note {
             position: absolute;
@@ -233,6 +233,7 @@
             line-height: 1.4;
             pointer-events: none;
         }
+        #thank-you-note * { pointer-events: auto; }
     </style>
 </head>
 <body>
@@ -256,15 +257,15 @@
 
         /* Descriptions for Kitchen Images */
         const kitchenDescriptions = {
-            1: "<div class='main-desc'>A PERSON WITH AN ALTERNATIVE STYLE: LONG, DARK HAIR, A LOT OF JEWELLERY AND A LOT OF LAYERS STACKED ON ONE ANOTHER. THIS PERSON SEEMS STRESSED OUT, THEY ARE LOOKING FOR SOMETHING. THIS IS A PERSON WHO'S FRIENDLY WHEN YOU KNOW THEM PERSONALLY BUT CAN SEEM MEAN WHEN YOU DON'T.<br><br><span class='lowercase-note'>(tense, stressed, aloof, overwhelmed)</span>",
-            2: "<div class='main-desc'>CLEANED DISHES STACKED ONE UPOND THE OTHER. A SHARP KNIFE IS POINTING OUT OF THE PILE. THE DISHES ARE WET. SOME ARE VISIBLY STILL A BIT DIRTY.<br><br><span class='lowercase-note'>(unstable)</span>",
-            3: "<div class='main-desc'>BREADCRUMBS OF WHAT SEEMS LIKE A CHEAP BAGUETTE ARE SCATTERED ON THE FLOOR WITH A SMALL PIECE OF LETTUCE NEXT TO IT.",
-            4: "<div class='main-desc'>A NAVY COTTON HOODIE IS LAYING ON THE BACKREST OF THE CHAIR. IT'S LOOKS LIKE IT WILL SLIDE OFF AT ANY MOMENT. ON THE HOODIE IS A SUBTLE BLACK GRAPHIC OF A DRAWING AND AN INSCRIPTION IN ANIME STYLE.",
-            5: "<div class='main-desc'>A PERSON, AROUND 21 YEARS OLD WITH BLOND, CURLY HAIR. THIS PERSON IS WEARING A BLACK PAIR OF JEANS WITH A WHITE SHIRT AND LEATHER SHOES. WE ONLY SEE THE EYES AND FOREHEAD OF THIS PERSON. THIS PERSON IS LOOKING INSIDE AND IS STANDING ON THE TIP OF THEIR FEET.<br><br><span class='lowercase-note'>(stressed, uncomfortable)</span>",
-            6: "<div class='main-desc'>A YOUNG MAN AROUND 27 YEARS OLD. HE'S WALKING AROUND THE CORNER, WE ONLY SEE HIS BACK. THIS GUY IS WEARING AN ALL BLACK OUTFIT AND HE HAS SHORT, DARK, MESSY HAIR.<br><br><span class='lowercase-note'>(mysterious, confident, nonchalant)</span>",
-            7: "<div class='main-desc'>WATER IS HEATING UP. IT MAKES THE NOISE OF RUMBLING BUBBLES, AS IT'S HEATING UP THE NOISE SOFTENS AND QUIETS DOWN.",
-            8: "<div class='main-desc'>A WOMAN AROUND 40 YEARS OLD. THIS IS A COOL PERSON, SHE'S IN WITH THE NEW GENERATION AND HAS A RELAXED, ALTERNATIVE STYLE. SHE'S WEARING WIDE PANTS WITH A FLOWY LINEN DRESS ON TOP AND HAS LOUD POINTY SHOES. HER HAIR MOVES WITH EACH STEP AS SHE'S TAKING A TURN LEFT. HER PACE IS STEADFAST, WE ONLY SEE HER BACK.<br><br><span class='lowercase-note'>(neutral, independent, confident)</span>",
-            9: "<div class='main-desc'>A USED FORK WITH A KNIFE AND A SMALL WHITE PLATE ARE LAYING ON THE TABLE. THE FORK LAYS AT THE CORNER OF THE TABLE, AND IS DIRTY. THE KNIFE IS LAYING FLAT, PERFECTLY HORIZONTAL ON THE PLATE. THIS PLATE IS COVERED WITH BREADCRUMBS. THERE IS ONE CHAIR NEXT TO THE TABLE, AS IF SOMEONE LEFT THE TABLE IN A HURRY."
+            1: "<div class='main-desc'>A PERSON WITH AN ALTERNATIVE STYLE: LONG, DARK HAIR, A LOT OF JEWELLERY AND A LOT OF LAYERS STACKED ON ONE ANOTHER. THIS PERSON SEEMS STRESSED OUT, THEY ARE LOOKING FOR SOMETHING. THIS IS A PERSON WHO'S FRIENDLY WHEN YOU KNOW THEM PERSONALLY BUT CAN SEEM MEAN WHEN YOU DON'T.</div><span class='lowercase-note'>(tense, stressed, aloof, overwhelmed)</span>",
+            2: "<div class='main-desc'>CLEANED DISHES STACKED ONE UPOND THE OTHER. A SHARP KNIFE IS POINTING OUT OF THE PILE. THE DISHES ARE WET. SOME ARE VISIBLY STILL A BIT DIRTY.</div><span class='lowercase-note'>(unstable)</span>",
+            3: "<div class='main-desc'>BREADCRUMBS OF WHAT SEEMS LIKE A CHEAP BAGUETTE ARE SCATTERED ON THE FLOOR WITH A SMALL PIECE OF LETTUCE NEXT TO IT.</div>",
+            4: "<div class='main-desc'>A NAVY COTTON HOODIE IS LAYING ON THE BACKREST OF THE CHAIR. IT'S LOOKS LIKE IT WILL SLIDE OFF AT ANY MOMENT. ON THE HOODIE IS A SUBTLE BLACK GRAPHIC OF A DRAWING AND AN INSCRIPTION IN ANIME STYLE.</div>",
+            5: "<div class='main-desc'>A PERSON, AROUND 21 YEARS OLD WITH BLOND, CURLY HAIR. THIS PERSON IS WEARING A BLACK PAIR OF JEANS WITH A WHITE SHIRT AND LEATHER SHOES. WE ONLY SEE THE EYES AND FOREHEAD OF THIS PERSON. THIS PERSON IS LOOKING INSIDE AND IS STANDING ON THE TIP OF THEIR FEET.</div><span class='lowercase-note'>(stressed, uncomfortable)</span>",
+            6: "<div class='main-desc'>A YOUNG MAN AROUND 27 YEARS OLD. HE'S WALKING AROUND THE CORNER, WE ONLY SEE HIS BACK. THIS GUY IS WEARING AN ALL BLACK OUTFIT AND HE HAS SHORT, DARK, MESSY HAIR.</div><span class='lowercase-note'>(mysterious, confident, nonchalant)</span>",
+            7: "<div class='main-desc'>WATER IS HEATING UP. IT MAKES THE NOISE OF RUMBLING BUBBLES, AS IT'S HEATING UP THE NOISE SOFTENS AND QUIETS DOWN.</div>",
+            8: "<div class='main-desc'>A WOMAN AROUND 40 YEARS OLD. THIS IS A COOL PERSON, SHE'S IN WITH THE NEW GENERATION AND HAS A RELAXED, ALTERNATIVE STYLE. SHE'S WEARING WIDE PANTS WITH A FLOWY LINEN DRESS ON TOP AND HAS LOUD POINTY SHOES. HER HAIR MOVES WITH EACH STEP AS SHE'S TAKING A TURN LEFT. HER PACE IS STEADFAST, WE ONLY SEE HER BACK.</div><span class='lowercase-note'>(neutral, independent, confident)</span>",
+            9: "<div class='main-desc'>A USED FORK WITH A KNIFE AND A SMALL WHITE PLATE ARE LAYING ON THE TABLE. THE FORK LAYS AT THE CORNER OF THE TABLE, AND IS DIRTY. THE KNIFE IS LAYING FLAT, PERFECTLY HORIZONTAL ON THE PLATE. THIS PLATE IS COVERED WITH BREADCRUMBS. THERE IS ONE CHAIR NEXT TO THE TABLE, AS IF SOMEONE LEFT THE TABLE IN A HURRY.</div>"
         };
 
         const worksData = {
@@ -273,7 +274,7 @@
             },
             'kitchen': { 
                 info: `<strong>Situation for a small kitchen and adjacent dining room with a narrow window giving on the outside.</strong> (2026)<br><br>
-                <div class="kitchen-stack">
+                <div class="kitchen-grid">
                     <img src="images/situation for a kitchen-1-website.jpg" alt="Kitchen 1" onclick="showKitchenDescription(1)">
                     <img src="images/situation for a kitchen-2-website.jpg" alt="Kitchen 2" onclick="showKitchenDescription(2)">
                     <img src="images/situation for a kitchen-3-website.jpg" alt="Kitchen 3" onclick="showKitchenDescription(3)">
@@ -295,7 +296,7 @@
                 info: '<strong>Boke kaas</strong> (2026)<br>Video performance<br><br><em>Three characters are making and eating a cheese sandwich. They stare just past the camera.</em><br><br><img src="images/boke-kaas-1-website.jpg" alt="Boke Kaas" style="max-width: 100%; height: auto; margin-top: 20px;"><br><br><img src="images/boke-kaas-2-website.jpg" alt="Boke Kaas" style="max-width: 100%; height: auto; margin-top: 20px;"><br><br><img src="images/boke-kaas-3-website.jpg" alt="Boke Kaas" style="max-width: 100%; height: auto; margin-top: 20px;">' 
             },
             'celebratie': { 
-                info: '<strong>celebratie compagnons</strong> (2026)<br>Sculptural installation<br><br><em>Curly ornaments that wish to celebrate the space.</em>' 
+                info: '<strong>celebratie compagnons</strong> (2026)<br>Sculptural installation<br><br><em>Curly ornaments that wish to celebrate the space.</em><br><br><video src="other/ccvideo" autoplay loop muted playsinline style="max-width: 650px; width: 100%; height: auto; margin-top: 20px; border-radius: 2px;"></video>' 
             },
             'abc': { 
                 info: '<strong>A, B, C</strong> (2025)<br>Video performance, script<br><br><em>Research on entropy (tested in a controlled environment). Seated at a table, one character attempts to contain the rising tension between the two others.</em><br><br><img src="images/ABC-1-website.png" alt="A, B, C" style="max-width: 100%; height: auto; margin-top: 20px;"><br><br><img src="images/ABC-2-website.png" alt="A, B, C" style="max-width: 100%; height: auto; margin-top: 20px;"><br><br><img src="images/ABC-3-website.png" alt="A, B, C" style="max-width: 100%; height: auto; margin-top: 20px;">' 
@@ -329,19 +330,129 @@
             }
         };
 
-        const textData = {
-            'denkbeeldig': { title: 'De denkbeeldige ruimte', content: 'Text for De denkbeeldige ruimte...' },
-            'shopsign': { title: 'De shopsign', content: 'De shopsign content...' },
-            'chihuahua-theory': { 
-                title: 'De chihuahua theorie', 
-                content: 'Hier komt de tekst van de chihuahua theorie...' 
-            },
-            'tafelgebeuren': { title: 'Het rigiditeitsgehalte van een tafelgebeuren', content: 'Text for tafelgebeuren...' }
-        };
-
         const entryDot = document.getElementById('entry-dot');
         const container = document.getElementById('tab-dots');
         const display = document.getElementById('content-display');
+
+        /* Residus Audio Player Handler */
+        let residusAudio = null;
+        let audioTimerInterval = null;
+
+        function handleResidusAudio(isOpening) {
+            if (isOpening) {
+                if (!residusAudio) {
+                    residusAudio = new Audio('other/Bartsoen.mp3');
+                    residusAudio.loop = true;
+                }
+                residusAudio.play().catch(e => console.log("Autoplay blocked:", e));
+                updateAudioControls();
+                audioTimerInterval = setInterval(updateAudioControls, 500);
+            } else {
+                if (residusAudio) {
+                    residusAudio.pause();
+                    residusAudio.currentTime = 0;
+                }
+                if (audioTimerInterval) clearInterval(audioTimerInterval);
+                setThankYouNote(null);
+            }
+        }
+
+        function updateAudioControls() {
+            if (!residusAudio) return;
+            let current = formatTime(residusAudio.currentTime);
+            let duration = isNaN(residusAudio.duration) ? "0:00" : formatTime(residusAudio.duration);
+            
+            let thankYouBox = document.getElementById('thank-you-note');
+            if (thankYouBox) {
+                thankYouBox.innerHTML = `
+                    <div style="display: flex; align-items: center; justify-content: flex-end; gap: 10px;">
+                        <span id="audio-timer">${current} / ${duration}</span>
+                        <div id="audio-mute-dot" class="dot" style="position: static; width: 32px; height: 32px; background: ${residusAudio.muted ? '#000' : '#fff'}; border: 1.8px solid #000; cursor: pointer;" onclick="toggleAudioMute()" title="Mute/Unmute"></div>
+                    </div>
+                `;
+            }
+        }
+
+        function toggleAudioMute() {
+            if (residusAudio) {
+                residusAudio.muted = !residusAudio.muted;
+                updateAudioControls();
+            }
+        }
+
+        function formatTime(seconds) {
+            let m = Math.floor(seconds / 60);
+            let s = Math.floor(seconds % 60);
+            return m + ":" + (s < 10 ? "0" : "") + s;
+        }
+
+        /* Waiting Line Draggable Images Handler */
+        let waitingLineImagesCreated = false;
+
+        function initWaitingLineImages() {
+            let layer = document.getElementById('draggable-images-layer');
+            if (!layer) {
+                layer = document.createElement('div');
+                layer.id = 'draggable-images-layer';
+                layer.style.position = 'fixed';
+                layer.style.top = '0';
+                layer.style.left = '0';
+                layer.style.width = '100vw';
+                layer.style.height = '100vh';
+                layer.style.pointerEvents = 'none';
+                layer.style.zIndex = '50';
+                document.body.appendChild(layer);
+
+                for (let i = 0; i < 9; i++) {
+                    const img = document.createElement('img');
+                    img.src = 'other/6.png';
+                    img.className = 'draggable-waiting-img';
+                    img.style.position = 'absolute';
+                    img.style.left = (120 + (i * 55)) + 'px';
+                    img.style.top = (350 + ((i % 3) * 60)) + 'px';
+                    img.style.width = '160px';
+                    img.style.height = 'auto';
+                    img.style.cursor = 'grab';
+                    img.style.pointerEvents = 'auto';
+                    img.style.borderRadius = '2px';
+                    img.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+
+                    makeDraggable(img);
+                    layer.appendChild(img);
+                }
+            }
+        }
+
+        function makeDraggable(elmnt) {
+            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+            elmnt.onmousedown = dragMouseDown;
+
+            function dragMouseDown(e) {
+                e.preventDefault();
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                document.onmouseup = closeDragElement;
+                document.onmousemove = elementDrag;
+                elmnt.style.cursor = 'grabbing';
+                elmnt.style.zIndex = '1000';
+            }
+
+            function elementDrag(e) {
+                e.preventDefault();
+                pos1 = pos3 - e.clientX;
+                pos2 = pos4 - e.clientY;
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+                elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+            }
+
+            function closeDragElement() {
+                document.onmouseup = null;
+                document.onmousemove = null;
+                elmnt.style.cursor = 'grab';
+            }
+        }
 
         function showKitchenDescription(imageIndex) {
             const box = document.getElementById('image-description-box');
@@ -455,6 +566,11 @@
                 else wt.classList.remove('visible');
             });
 
+            // Handle audio lifecycle when leaving/entering Residus
+            if (subTabToOpen !== 'residus') {
+                handleResidusAudio(false);
+            }
+
             setThankYouNote(null);
             renderTab(tabName, subTabToOpen);
 
@@ -495,10 +611,9 @@
             } else if (tabName === 'Text') {
                 display.innerHTML = `
                     <div class="subnav-container">
-                        <span class="trigger" id="text-denkbeeldig" onclick="showText('denkbeeldig')">De denkbeeldige ruimte</span>
-                        <span class="trigger" id="text-shopsign" onclick="showText('shopsign')">De shopsign</span>
-                        <span class="trigger" id="text-chihuahua-theory" onclick="showText('chihuahua-theory')">De chihuahua theorie</span>
-                        <span class="trigger" id="text-tafelgebeuren" onclick="showText('tafelgebeuren')">Het rigiditeitsgehalte van een tafelgebeuren</span>
+                        <a href="denkbeeldige-ruimte.html" class="trigger">De denkbeeldige ruimte</a>
+                        <a href="shopsign.html" class="trigger">De shopsign</a>
+                        <a href="tafelgebeuren.html" class="trigger">Het rigiditeitsgehalte van een tafelgebeuren</a>
                     </div><div id="content-area"></div>`;
                 if(autoOpenSub) showText(autoOpenSub);
             }
@@ -521,30 +636,35 @@
             const el = document.getElementById('work-' + key);
             if(el) el.classList.add('active');
 
+            // Audio management for Residus
+            if (key === 'residus') {
+                handleResidusAudio(true);
+            } else {
+                handleResidusAudio(false);
+            }
+
+            // Waiting line draggable images initialization
+            if (key === 'waitingline') {
+                initWaitingLineImages();
+            }
+
             if (worksData[key]) {
                 document.getElementById('content-area').innerHTML = worksData[key].info;
             }
 
-            setThankYouNote(key);
+            if (key !== 'residus') {
+                setThankYouNote(key);
+            }
             updateHash('Works', key);
         }
 
         function showCollab(key) {
             setThankYouNote(null);
-            document.querySelectorAll('.collab-trigger').forEach(t => t.className = 'collab-trigger trigger');
+            document.querySelectorAll('.collab-trigger').forEach(t => t.classList.remove('active'));
             const el = document.getElementById('collab-' + key);
-            if(el) el.classList.add('active-' + key);
+            if(el) el.classList.add('active');
             document.getElementById('content-area').innerHTML = collabData[key].info;
             updateHash('Collaborative projects', key);
-        }
-
-        function showText(key) {
-            setThankYouNote(null);
-            document.querySelectorAll('.subnav-container .trigger').forEach(t => t.classList.remove('active'));
-            const el = document.getElementById('text-' + key);
-            if(el) el.classList.add('active');
-            document.getElementById('content-area').innerHTML = textData[key].content;
-            updateHash('Text', key);
         }
 
         entryDot.onclick = function() {
@@ -578,9 +698,6 @@
                 activateTab('Collaborative projects', sub);
             } else if (hash === 'text') {
                 activateTab('Text');
-            } else if (hash.startsWith('text-')) {
-                const sub = hash.replace('text-', '');
-                activateTab('Text', sub);
             }
         }
 
