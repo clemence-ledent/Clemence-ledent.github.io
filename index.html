@@ -335,7 +335,7 @@
         const container = document.getElementById('tab-dots');
         const display = document.getElementById('content-display');
 
-        /* Residus Audio Player Handler with Robust Play/Error Catching */
+        /* Residus Audio Player Handler (Click-to-Play, no autoplay blocking) */
         let residusAudio = null;
         let audioTimerInterval = null;
 
@@ -345,15 +345,9 @@
                     residusAudio = new Audio('other/Bartsoen.mp3');
                     residusAudio.loop = true;
                 }
-                
-                residusAudio.play().then(() => {
-                    updateAudioControls();
-                    if (audioTimerInterval) clearInterval(audioTimerInterval);
-                    audioTimerInterval = setInterval(updateAudioControls, 500);
-                }).catch(err => {
-                    console.log("Browser blocked autoplay or audio file missing:", err);
-                    updateAudioControls();
-                });
+                updateAudioControls();
+                if (audioTimerInterval) clearInterval(audioTimerInterval);
+                audioTimerInterval = setInterval(updateAudioControls, 500);
             } else {
                 if (residusAudio) {
                     residusAudio.pause();
@@ -387,7 +381,8 @@
                     residusAudio.play().then(() => {
                         updateAudioControls();
                     }).catch(e => {
-                        console.log("Playback error, check if other/Bartsoen.mp3 exists:", e);
+                        console.log("Playback error, check if other/Bartsoen.mp3 is in your repo:", e);
+                        alert("Audio file could not be played. Please check if 'other/Bartsoen.mp3' exists in your repository.");
                     });
                 } else {
                     residusAudio.pause();
