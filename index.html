@@ -353,7 +353,7 @@
         function handleResidusAudio(isOpening) {
             if (isOpening) {
                 if (!residusAudio) {
-                    residusAudio = new Audio('https://raw.githubusercontent.com/clemenceledent/clemenceledent.github.io/main/other/Bartsoen.mp3');
+                    residusAudio = new Audio('clemence-ledent.github.io/main/other/Bartsoen.mp3');
                     residusAudio.loop = true;
                 }
                 updateAudioControls();
@@ -413,6 +413,13 @@
             pageRendering = false,
             pageNumPending = null,
             scale = 0.85;
+
+        /* Two-Page PDF Viewer Handler for 'The waiting line' */
+        let pdfDoc = null,
+            pageNum = 1,
+            pageRendering = false,
+            pageNumPending = null,
+            scale = 0.75;
 
         function initPdfViewer() {
             const url = 'images/waiting-line.pdf';
@@ -479,15 +486,17 @@
                         canvas.height = Math.max(viewport1.height, viewport2.height);
                         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-                        let renderContext1 = {
+                        // Render Left Page
+                        page1.render({
                             canvasContext: ctx,
                             viewport: viewport1
-                        };
-
-                        page1.render(renderContext1).promise.then(() => {
+                        }).promise.then(() => {
+                            // Render Right Page shifted by viewport1.width
+                            let transform = [1, 0, 0, 1, viewport1.width, 0];
                             let renderContext2 = {
                                 canvasContext: ctx,
-                                viewport: page2.getViewport({scale: scale, offsetX: viewport1.width})
+                                viewport: viewport2,
+                                transform: transform
                             };
                             page2.render(renderContext2).promise.then(() => {
                                 pageRendering = false;
@@ -502,11 +511,10 @@
                     canvas.width = viewport1.width;
                     canvas.height = viewport1.height;
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    let renderContext1 = {
+                    page1.render({
                         canvasContext: ctx,
                         viewport: viewport1
-                    };
-                    page1.render(renderContext1).promise.then(() => {
+                    }).promise.then(() => {
                         pageRendering = false;
                         if (pageNumPending !== null) {
                             renderSpread(pageNumPending);
