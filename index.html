@@ -335,7 +335,7 @@
         const container = document.getElementById('tab-dots');
         const display = document.getElementById('content-display');
 
-        /* Residus Audio Player Handler */
+        /* Residus Audio Player Handler with Robust Play/Error Catching */
         let residusAudio = null;
         let audioTimerInterval = null;
 
@@ -345,12 +345,13 @@
                     residusAudio = new Audio('other/Bartsoen.mp3');
                     residusAudio.loop = true;
                 }
+                
                 residusAudio.play().then(() => {
                     updateAudioControls();
                     if (audioTimerInterval) clearInterval(audioTimerInterval);
                     audioTimerInterval = setInterval(updateAudioControls, 500);
-                }).catch(e => {
-                    console.log("Autoplay waiting for user interaction:", e);
+                }).catch(err => {
+                    console.log("Browser blocked autoplay or audio file missing:", err);
                     updateAudioControls();
                 });
             } else {
@@ -367,7 +368,7 @@
             if (!residusAudio) return;
             let current = formatTime(residusAudio.currentTime);
             let duration = isNaN(residusAudio.duration) ? "0:00" : formatTime(residusAudio.duration);
-            let isPlaying = !residusAudio.paused;
+            let isPlaying = residusAudio && !residusAudio.paused && residusAudio.currentTime > 0 && !residusAudio.ended;
             
             let thankYouBox = document.getElementById('thank-you-note');
             if (thankYouBox) {
@@ -383,7 +384,11 @@
         function toggleAudioPlay() {
             if (residusAudio) {
                 if (residusAudio.paused) {
-                    residusAudio.play();
+                    residusAudio.play().then(() => {
+                        updateAudioControls();
+                    }).catch(e => {
+                        console.log("Playback error, check if other/Bartsoen.mp3 exists:", e);
+                    });
                 } else {
                     residusAudio.pause();
                 }
@@ -395,73 +400,6 @@
             let m = Math.floor(seconds / 60);
             let s = Math.floor(seconds % 60);
             return m + ":" + (s < 10 ? "0" : "") + s;
-        }
-
-        /* Waiting Line Draggable Images Handler (placed left from thank you note, all next to each other) */
-        function initWaitingLineImages() {
-            let layer = document.getElementById('draggable-images-layer');
-            if (!layer) {
-                layer = document.createElement('div');
-                layer.id = 'draggable-images-layer';
-                layer.style.position = 'fixed';
-                layer.style.top = '0';
-                layer.style.left = '0';
-                layer.style.width = '100vw';
-                layer.style.height = '100vh';
-                layer.style.pointerEvents = 'none';
-                layer.style.zIndex = '50';
-                document.body.appendChild(layer);
-
-                for (let i = 0; i < 9; i++) {
-                    const img = document.createElement('img');
-                    img.src = 'other/6.png';
-                    img.className = 'draggable-waiting-img';
-                    img.style.position = 'absolute';
-                    // Positioned side-by-side on the left side of the screen
-                    img.style.left = (60 + (i * 90)) + 'px';
-                    img.style.top = '500px';
-                    img.style.width = '80px';
-                    img.style.height = 'auto';
-                    img.style.cursor = 'grab';
-                    img.style.pointerEvents = 'auto';
-                    img.style.borderRadius = '2px';
-                    img.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
-
-                    makeDraggable(img);
-                    layer.appendChild(img);
-                }
-            }
-        }
-
-        function makeDraggable(elmnt) {
-            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-            elmnt.onmousedown = dragMouseDown;
-
-            function dragMouseDown(e) {
-                e.preventDefault();
-                pos3 = e.clientX;
-                pos4 = e.clientY;
-                document.onmouseup = closeDragElement;
-                document.onmousemove = elementDrag;
-                elmnt.style.cursor = 'grabbing';
-                elmnt.style.zIndex = '1000';
-            }
-
-            function elementDrag(e) {
-                e.preventDefault();
-                pos1 = pos3 - e.clientX;
-                pos2 = pos4 - e.clientY;
-                pos3 = e.clientX;
-                pos4 = e.clientY;
-                elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
-                elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
-            }
-
-            function closeDragElement() {
-                document.onmouseup = null;
-                document.onmousemove = null;
-                elmnt.style.cursor = 'grab';
-            }
         }
 
         function showKitchenDescription(imageIndex) {
@@ -649,10 +587,6 @@
                 handleResidusAudio(true);
             } else {
                 handleResidusAudio(false);
-            }
-
-            if (key === 'waitingline') {
-                initWaitingLineImages();
             }
 
             if (worksData[key]) {
