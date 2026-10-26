@@ -12,49 +12,60 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            padding: 80px 20px 100px 20px;
+            box-sizing: border-box;
             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-            cursor: default;
         }
 
-        #booklet-container {
+        #booklet-scroll-container {
             display: flex;
-            gap: 20px;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            user-select: none;
+            gap: 0; /* No vertical gap between rows */
+            max-width: 100%;
         }
 
-        .page-frame {
+        /* Single standalone page (R1 and R16) */
+        .page-single {
             border: 1px solid #000;
-            border-radius: 2px;
             background: #fff;
-            overflow: hidden;
+            margin-bottom: 0;
+        }
+
+        .page-single img {
+            display: block;
+            height: 60vh;
+            max-width: 100%;
+            object-fit: contain;
+        }
+
+        /* Two-by-two row container */
+        .page-row {
+            display: flex;
+            gap: 0; /* Zero gap between the two pages */
+        }
+
+        /* Individual page frame in a row */
+        .page-frame {
+            border-top: 1px solid #000;
+            border-bottom: 1px solid #000;
+            border-left: 1px solid #000;
+            background: #fff;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: opacity 0.2s ease;
+        }
+
+        /* Give the right page its right border, and remove double borders in the middle */
+        .page-frame:last-child {
+            border-right: 1px solid #000;
         }
 
         .page-frame img {
             display: block;
-            max-height: 75vh;
-            width: auto;
+            height: 60vh;
+            max-width: 100%;
             object-fit: contain;
-        }
-
-        #custom-cursor-dot {
-            display: none;
-            position: fixed;
-            width: 32px;
-            height: 32px;
-            background: #000;
-            border: 1.8px solid #000;
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 1000;
-            transform: translate(-50%, -50%);
         }
 
         #back-link {
@@ -74,97 +85,47 @@
 
     <a href="index.html#text" id="back-link">← Back to portfolio</a>
 
-    <div id="booklet-container" onclick="turnPage(event)">
-        <div class="page-frame" id="frame-left">
-            <img id="img-left" src="" alt="Page Left">
+    <div id="booklet-scroll-container">
+        <!-- R1: First page alone -->
+        <div class="page-single">
+            <img src="rigiditeitsgehalte/R1.jpg" alt="Rigiditeitsgehalte R1">
         </div>
-        <div class="page-frame" id="frame-right">
-            <img id="img-right" src="" alt="Page Right">
+
+        <!-- Rows for R2 to R15 (Two by two, touching) -->
+        <div class="page-row">
+            <div class="page-frame"><img src="rigiditeitsgehalte/R2.jpg" alt="R2"></div>
+            <div class="page-frame"><img src="rigiditeitsgehalte/R3.jpg" alt="R3"></div>
+        </div>
+        <div class="page-row">
+            <div class="page-frame"><img src="rigiditeitsgehalte/R4.jpg" alt="R4"></div>
+            <div class="page-frame"><img src="rigiditeitsgehalte/R5.jpg" alt="R5"></div>
+        </div>
+        <div class="page-row">
+            <div class="page-frame"><img src="rigiditeitsgehalte/R6.jpg" alt="R6"></div>
+            <div class="page-frame"><img src="rigiditeitsgehalte/R7.jpg" alt="R7"></div>
+        </div>
+        <div class="page-row">
+            <div class="page-frame"><img src="rigiditeitsgehalte/R8.jpg" alt="R8"></div>
+            <div class="page-frame"><img src="rigiditeitsgehalte/R9.jpg" alt="R9"></div>
+        </div>
+        <div class="page-row">
+            <div class="page-frame"><img src="rigiditeitsgehalte/R10.jpg" alt="R10"></div>
+            <div class="page-frame"><img src="rigiditeitsgehalte/R11.jpg" alt="R11"></div>
+        </div>
+        <div class="page-row">
+            <div class="page-frame"><img src="rigiditeitsgehalte/R12.jpg" alt="R12"></div>
+            <div class="page-frame"><img src="rigiditeitsgehalte/R13.jpg" alt="R13"></div>
+        </div>
+        <div class="page-row">
+            <div class="page-frame"><img src="rigiditeitsgehalte/R14.jpg" alt="R14"></div>
+            <div class="page-frame"><img src="rigiditeitsgehalte/R15.jpg" alt="R15"></div>
+        </div>
+
+        <!-- R16: Last page alone -->
+        <div class="page-single">
+            <img src="rigiditeitsgehalte/R16.jpg" alt="Rigiditeitsgehalte R16">
         </div>
     </div>
 
-    <div id="custom-cursor-dot"></div>
-
-    <script>
-        // Total 16 pages (R1 to R16). 
-        // Note: Change '.jpg' below if your images are .png or another extension.
-        const totalPages = 16;
-        const imageExtension = '.jpg'; 
-        let currentIndex = 1; // R1 starts alone
-
-        const container = document.getElementById('booklet-container');
-        const frameLeft = document.getElementById('frame-left');
-        const frameRight = document.getElementById('frame-right');
-        const imgLeft = document.getElementById('img-left');
-        const imgRight = document.getElementById('img-right');
-        const customCursor = document.getElementById('custom-cursor-dot');
-
-        function updateBooklet() {
-            frameLeft.style.opacity = '0';
-            frameRight.style.opacity = '0';
-
-            setTimeout(() => {
-                if (currentIndex === 1) {
-                    // Page 1 alone
-                    imgLeft.src = `rigiditeitsgehalte/R1${imageExtension}`;
-                    frameLeft.style.display = 'flex';
-                    frameRight.style.display = 'none';
-                } else if (currentIndex === totalPages) {
-                    // Last page (R16) alone
-                    imgLeft.src = `rigiditeitsgehalte/R${totalPages}${imageExtension}`;
-                    frameLeft.style.display = 'flex';
-                    frameRight.style.display = 'none';
-                } else {
-                    // Spread of two pages side-by-side
-                    imgLeft.src = `rigiditeitsgehalte/R${currentIndex}${imageExtension}`;
-                    imgRight.src = `rigiditeitsgehalte/R${currentIndex + 1}${imageExtension}`;
-                    frameLeft.style.display = 'flex';
-                    frameRight.style.display = 'flex';
-                }
-
-                frameLeft.style.opacity = '1';
-                frameRight.style.opacity = '1';
-            }, 150);
-        }
-
-        function turnPage(e) {
-            const rect = container.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-
-            if (x < rect.width / 2) {
-                // Clicked left -> Go backward
-                if (currentIndex === totalPages) {
-                    currentIndex = totalPages - 2; // from R16 back to R14-R15 spread
-                } else if (currentIndex > 1) {
-                    currentIndex -= 2;
-                    if (currentIndex < 1) currentIndex = 1;
-                }
-            } else {
-                // Clicked right -> Go forward
-                if (currentIndex === 1) {
-                    currentIndex = 2; // from R1 to R2-R3 spread
-                } else if (currentIndex < totalPages - 1) {
-                    currentIndex += 2;
-                    if (currentIndex >= totalPages) {
-                        currentIndex = totalPages;
-                    }
-                } else if (currentIndex === totalPages - 1 || currentIndex === totalPages - 2) {
-                    currentIndex = totalPages; // reach final R16 alone
-                }
-            }
-            updateBooklet();
-        }
-
-        // Custom dot cursor behavior
-        container.onmouseenter = () => { customCursor.style.display = 'block'; };
-        container.onmouseleave = () => { customCursor.style.display = 'none'; };
-        container.onmousemove = (e) => {
-            customCursor.style.left = e.clientX + 'px';
-            customCursor.style.top = e.clientY + 'px';
-        };
-
-        // Initialize first view
-        updateBooklet();
-    </script>
 </body>
 </html>
