@@ -287,7 +287,12 @@
 
         const worksData = {
             'residus': { 
-                info: '<strong>Residus (Bartsoen)</strong> (2026)<br>In situ sound installation: obsessively tidied conference room, handmade speakers<br><br><em>A staging of presence through absence. Speakers are scattered throughout the space, emitting commonplace sounds of four invisible characters. The work uses ambient sound to trigger a hyper-awareness of the physical space and the bodies that occupy it.</em><br><br><img src="images/Bartsoen-1-website.jpg" alt="Residus (Bartsoen)" style="max-width: 100%; height: auto; margin-top: 20px;"><br><br><img src="images/Bartsoen-2-website.jpg" alt="Residus (Bartsoen)" style="max-width: 100%; height: auto; margin-top: 20px;"><br><br><img src="images/Bartsoen-5-website.jpg" alt="Residus (Bartsoen)" style="max-width: 100%; height: auto; margin-top: 20px;"><br><br><img src="images/Bartsoen-6-website.jpg" alt="Residus (Bartsoen)" style="max-width: 100%; height: auto; margin-top: 20px;">' 
+                info: '<strong>Residu_1 (Bartosen)</strong> (2026)<br>In situ sound installation: obsessively tidied conference room, handmade speakers<br><br><em>A staging of presence through absence. Speakers are scattered throughout the space, emitting commonplace sounds of four invisible characters. The work uses ambient sound to trigger a hyper-awareness of the physical space and the bodies that occupy it.</em><br><br>' +
+                      '<div style="display: flex; align-items: center; gap: 15px; margin: 20px 0;">' +
+                      '<div id="residus-audio-dot" class="dot" style="position: static; cursor: pointer; background: #fff;" onclick="toggleResidusAudio()" title="Play/Pause"></div>' +
+                      '<span id="residus-timer" style="font-size: 15px; font-weight: 300; font-family: monospace;">0:00 / 0:00</span>' +
+                      '</div>' +
+                      '<br><img src="images/Bartsoen-1-website.jpg" alt="Residus (Bartsoen)" style="max-width: 100%; height: auto; margin-top: 20px;"><br><br><img src="images/Bartsoen-2-website.jpg" alt="Residus (Bartsoen)" style="max-width: 100%; height: auto; margin-top: 20px;"><br><br><img src="images/Bartsoen-5-website.jpg" alt="Residus (Bartsoen)" style="max-width: 100%; height: auto; margin-top: 20px;"><br><br><img src="images/Bartsoen-6-website.jpg" alt="Residus (Bartsoen)" style="max-width: 100%; height: auto; margin-top: 20px;">' 
             },
             'kitchen': { 
                 info: `<strong>Situation for a small kitchen and adjacent dining room with a narrow window giving on the outside.</strong> (2026)<br><br>
@@ -329,20 +334,21 @@
                 info: '<strong>A, B, C</strong> (2025)<br>Video performance, script<br><br><em>Research on entropy (tested in a controlled environment). Seated at a table, one character attempts to contain the rising tension between the two others.</em><br><br><img src="images/ABC-1-website.png" alt="A, B, C" style="max-width: 100%; height: auto; margin-top: 20px;"><br><br><img src="images/ABC-2-website.png" alt="A, B, C" style="max-width: 100%; height: auto; margin-top: 20px;"><br><br><img src="images/ABC-3-website.png" alt="A, B, C" style="max-width: 100%; height: auto; margin-top: 20px;">' 
             },
             'untitled': { 
-                info: '<strong>Untitled (pas de mousquetaires)</strong> (2025)<br>Archival video, digital alteration<br><br><em>Archival video exploration featuring digital alteration.</em><br><br><img src="images/Censure-1-website.png" alt="Untitled (pas de mousquetaires)" style="max-width: 100%; height: auto; margin-top: 20px;"><br><br><img src="images/censure-2-website.png" alt="Untitled (pas de mousquetaires)" style="max-width: 100%; height: auto; margin-top: 20px;"><br><br><img src="images/censure-3-website.png" alt="Untitled (pas de mousquetaires)" style="max-width: 100%; height: auto; margin-top: 20px;">' 
+                info: '<strong>Untitled (pas de mousquetaire)</strong> (2025)<br>Archival video, digital alteration<br><br><em>Archival video exploration featuring digital alteration.</em><br><br><video src="other/censure-video-website.mp4" autoplay loop muted playsinline style="max-width: 650px; width: 100%; height: auto; margin-top: 20px; border-radius: 2px;"></video>' 
             },
             'sunnyside': { 
-                info: '<strong>Sunny side Up</strong> (2025)<br>Collage series, poster design<br><br><em>Presented during Le Bazar troué at Salvatore Ghent.</em>' 
+                info: '<strong>Sunny side Up</strong> (2025)<br>Collage series, poster design<br><br><em>Presented during Le Bazar troué at Salvatore Ghent.</em><br><br><div class="horizontal-gallery"><img src="images/sunny-1.jpg" alt="Sunny side Up 1"><img src="images/sunny-2.jpg" alt="Sunny side Up 2"><img src="images/sunny-3.jpg" alt="Sunny side Up 3"><img src="images/sunny-4.jpg" alt="Sunny side Up 4"></div>' 
             },
             'metverwarring': { 
-                info: '<strong>Met verwarring in de wachtruimte</strong> (2024)<br>Performance, mise-en-scène<br><br><em>Immersive performance navigating around a counter. Participants wear jackets blending them into the architecture. Guided through a cycle of calculated confusion, the participants get stuck in a loop staging the impossibility of truly accessing the "other side".</em>' 
+                info: '<strong>Met verwarring in de wachtruimte</strong> (2024)<br>Performance, mise-en-scène<br><br><em>Immersive performance navigating around a counter. Participants wear jackets blending them into the architecture. Guided through a cycle of calculated confusion, the participants get stuck in a loop staging the impossibility of truly accessing the "other side".</em><br><br><div class="horizontal-gallery"><img src="images/wachtruimte-0.png" alt="Wachtruimte 0"><img src="images/wachtruimte-1.png" alt="Wachtruimte 1"><img src="images/wachtruimte-2.png" alt="Wachtruimte 2"><img src="images/wachtruimte-3.png" alt="Wachtruimte 3"></div>' 
             }
         };
 
         const thanksData = {
             'waitingline': 'Thanks to the visitors to answer the questionnaire',
             'boke': 'Thanks to Puck van der Poel, Merel Van den Eynde, Oona Antonissen, Rinke van der Veen, Elisa Palm, Freek Lannoo, Thomas Joostens',
-            'abc': 'Thanks to Malou Legrand, Puck van der Poel, Rinke Van Der Veen'
+            'abc': 'Thanks to Malou Legrand, Puck van der Poel, Rinke Van Der Veen',
+            'sunnyside': 'Pictures: Lars Bernakiewicz'
         };
 
         const collabData = {
@@ -360,6 +366,64 @@
         const entryDot = document.getElementById('entry-dot');
         const container = document.getElementById('tab-dots');
         const display = document.getElementById('content-display');
+
+        /* Residus Audio Player Handler */
+        let residusAudio = null;
+        let audioTimerInterval = null;
+
+        function handleResidusAudio(isOpening) {
+            if (isOpening) {
+                if (!residusAudio) {
+                    residusAudio = new Audio('other/Bartsoen.mp3');
+                    residusAudio.loop = true;
+                    residusAudio.ontimeupdate = updateResidusUI;
+                    residusAudio.onloadedmetadata = updateResidusUI;
+                }
+                updateResidusUI();
+                if (audioTimerInterval) clearInterval(audioTimerInterval);
+                audioTimerInterval = setInterval(updateResidusUI, 500);
+            } else {
+                if (residusAudio) {
+                    residusAudio.pause();
+                    residusAudio.currentTime = 0;
+                }
+                if (audioTimerInterval) clearInterval(audioTimerInterval);
+            }
+        }
+
+        function toggleResidusAudio() {
+            if (!residusAudio) return;
+            if (residusAudio.paused) {
+                residusAudio.play().catch(e => console.log("Playback blocked:", e));
+            } else {
+                residusAudio.pause();
+            }
+            updateResidusUI();
+        }
+
+        function updateResidusUI() {
+            const dot = document.getElementById('residus-audio-dot');
+            const timer = document.getElementById('residus-timer');
+            if (!residusAudio) return;
+
+            let isPlaying = !residusAudio.paused && residusAudio.currentTime > 0 && !residusAudio.ended;
+            if (dot) {
+                if (isPlaying) {
+                    dot.style.background = 'rgb(0, 0, 255)';
+                    dot.style.borderColor = 'rgb(0, 0, 255)';
+                } else {
+                    dot.style.background = '#fff';
+                    dot.style.borderColor = '#000';
+                }
+            }
+            if (timer) {
+                let curM = Math.floor(residusAudio.currentTime / 60);
+                let curS = Math.floor(residusAudio.currentTime % 60);
+                let durM = isNaN(residusAudio.duration) ? 0 : Math.floor(residusAudio.duration / 60);
+                let durS = isNaN(residusAudio.duration) ? 0 : Math.floor(residusAudio.duration % 60);
+                timer.textContent = `${curM}:${curS < 10 ? '0':''}${curS} / ${durM}:${durS < 10 ? '0':''}${durS}`;
+            }
+        }
 
         /* Two-Page PDF Viewer Handler for 'The waiting line' */
         let pdfDoc = null,
@@ -395,7 +459,6 @@
                         const rect = pdfContainer.getBoundingClientRect();
                         const x = e.clientX - rect.left;
                         if (x < rect.width / 2) {
-                            // Left side click -> Previous two pages
                             if (pageNum > 2) {
                                 pageNum -= 2;
                                 queueRenderSpread(pageNum);
@@ -404,7 +467,6 @@
                                 queueRenderSpread(pageNum);
                             }
                         } else {
-                            // Right side click -> Next two pages
                             if (pageNum + 2 <= pdfDoc.numPages) {
                                 pageNum += 2;
                                 queueRenderSpread(pageNum);
@@ -592,6 +654,10 @@
                 else wt.classList.remove('visible');
             });
 
+            if (subTabToOpen !== 'residus') {
+                handleResidusAudio(false);
+            }
+
             setThankYouNote(null);
             renderTab(tabName, subTabToOpen);
 
@@ -635,7 +701,7 @@
                         <a href="denkbeeldige-ruimte.html" class="trigger">De denkbeeldige ruimte</a>
                         <a href="shopsign.html" class="trigger">De shopsign</a>
                         <a href="tafelgebeuren.html" class="trigger">Het rigiditeitsgehalte van een tafelgebeuren</a>
-                        <a href="rigiditeitsgehalte.html" target="_blank" class="trigger">De rigiditeitsgehalte (Booklet viewer)</a>
+                        <a href="rigiditeitsgehalte.html" target="_blank" class="trigger">de rigiditeitsgehalte van een tafelgebeuren</a>
                     </div><div id="content-area"></div>`;
                 if(autoOpenSub) showText(autoOpenSub);
             }
@@ -658,8 +724,17 @@
             const el = document.getElementById('work-' + key);
             if(el) el.classList.add('active');
 
+            if (key === 'residus') {
+                handleResidusAudio(true);
+            } else {
+                handleResidusAudio(false);
+            }
+
             if (worksData[key]) {
                 document.getElementById('content-area').innerHTML = worksData[key].info;
+                if (key === 'residus') {
+                    updateResidusUI();
+                }
             }
 
             if (key === 'waitingline') {
