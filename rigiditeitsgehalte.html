@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Het rigiditeitsgehalte van een tafelgebeuren — Clémence Ledent</title>
+    <title>de rigiditeitsgehalte van een tafelgebeuren — Clémence Ledent</title>
     <style>
         body {
             margin: 0;
@@ -21,7 +21,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 0; /* No vertical gap between rows */
+            gap: 30px; /* Vertical gap between every spread/row */
             max-width: 100%;
         }
 
@@ -29,12 +29,15 @@
         .page-single {
             border: 1px solid #000;
             background: #fff;
-            margin-bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 2px;
         }
 
         .page-single img {
             display: block;
-            height: 60vh;
+            height: 78vh; /* 30% bigger (from 60vh) */
             max-width: 100%;
             object-fit: contain;
         }
@@ -42,7 +45,7 @@
         /* Two-by-two row container */
         .page-row {
             display: flex;
-            gap: 0; /* Zero gap between the two pages */
+            gap: 0; /* Seamless center spine */
         }
 
         /* Individual page frame in a row */
@@ -56,14 +59,14 @@
             justify-content: center;
         }
 
-        /* Give the right page its right border, and remove double borders in the middle */
+        /* Give the right page its outer right border */
         .page-frame:last-child {
             border-right: 1px solid #000;
         }
 
         .page-frame img {
             display: block;
-            height: 60vh;
+            height: 78vh; /* 30% bigger (from 60vh) */
             max-width: 100%;
             object-fit: contain;
         }
