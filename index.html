@@ -287,7 +287,11 @@
                       '<div style="display: flex; align-items: center; gap: 15px; margin: 20px 0;">' +
                       '<div id="residus-audio-dot" class="dot" style="position: static; cursor: pointer; background: #fff;" onclick="toggleResidusAudio()" title="Play/Pause"></div>' +
                       '<span id="residus-timer" style="font-size: 15px; font-weight: 300; font-family: monospace;">0:00 / 0:00</span>' +
-                      '<audio id="residus-audio-element" src="other/Bartsoen.mp3" preload="auto" loop></audio>' +
+                      '<audio id="residus-audio-element" preload="auto" loop>' +
+                      '<source src="other/Bartsoen.mp3" type="audio/mpeg">' +
+                      '<source src="other/Bartsoen.wav" type="audio/wav">' +
+                      'Your browser does not support the audio element.' +
+                      '</audio>' +
                       '</div>' +
                       '<br><img src="images/Bartsoen-1-website.jpg" alt="Residus (Bartsoen)" style="max-width: 100%; height: auto; margin-top: 20px;"><br><br><img src="images/Bartsoen-2-website.jpg" alt="Residus (Bartsoen)" style="max-width: 100%; height: auto; margin-top: 20px;"><br><br><img src="images/Bartsoen-5-website.jpg" alt="Residus (Bartsoen)" style="max-width: 100%; height: auto; margin-top: 20px;"><br><br><img src="images/Bartsoen-6-website.jpg" alt="Residus (Bartsoen)" style="max-width: 100%; height: auto; margin-top: 20px;">' 
             },
@@ -337,14 +341,14 @@
                 info: '<strong>A, B, C</strong> (2025)<br>Video performance, script<br><br><em>Research on entropy (tested in a controlled environment). Seated at a table, one character attempts to contain the rising tension between the two others.</em><br><br><img src="images/ABC-1-website.png" alt="A, B, C" style="max-width: 100%; height: auto; margin-top: 20px;"><br><br><img src="images/ABC-2-website.png" alt="A, B, C" style="max-width: 100%; height: auto; margin-top: 20px;"><br><br><img src="images/ABC-3-website.png" alt="A, B, C" style="max-width: 100%; height: auto; margin-top: 20px;">' 
             },
             'untitled': { 
-                info: '<strong>Untitled (pas de mousquetaire)</strong> (2025)<br>Archival video, digital alteration<br><br><em>Archival video exploration featuring digital alteration.</em><br><br><div style="width: 80vw; position: relative; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw; display: flex; justify-content: center; margin-top: 25px;"><video src="other/censure-video-website.mp4" autoplay loop muted playsinline preload="auto" style="max-width: 780px; width: 70vw; height: auto; border-radius: 2px; display: block;"></video></div>' 
+                info: '<strong>Untitled (pas de mousquetaire)</strong> (2025)<br>Archival video, digital alteration<br><br><em>Archival video exploration featuring digital alteration.</em><br><br><div style="margin-top: 25px;"><video src="other/censure-video-website.mp4" autoplay loop muted playsinline preload="auto" style="max-width: 780px; width: 100%; height: auto; border-radius: 2px; display: block;"></video></div>' 
             },
             'sunnyside': { 
                 info: `<strong>Sunny side Up</strong> (2025)<br>Collage series, poster design<br><br><em>Presented during Le Bazar troué at Salvatore Ghent.</em>
-                    <br><br><img src="images/sunny-1.jpg" alt="Sunny side Up 1" style="max-width: 80%; height: auto; margin-top: 20px;">
-                    <br><br><img src="images/sunny-2.jpg" alt="Sunny side Up 2" style="max-width: 80%; height: auto; margin-top: 20px;">
-                    <br><br><img src="images/Sunny-3.jpg" alt="Sunny side Up 3" style="max-width: 80%; height: auto; margin-top: 20px;">
-                    <br><br><img src="images/Sunny-4.jpg" alt="Sunny side Up 4" style="max-width: 80%; height: auto; margin-top: 20px;">` 
+                    <br><br><img src="images/sunny-1.jpg" alt="Sunny side Up 1" style="max-width: 96%; height: auto; margin-top: 20px;">
+                    <br><br><img src="images/sunny-2.jpg" alt="Sunny side Up 2" style="max-width: 96%; height: auto; margin-top: 20px;">
+                    <br><br><img src="images/Sunny-3.jpg" alt="Sunny side Up 3" style="max-width: 96%; height: auto; margin-top: 20px;">
+                    <br><br><img src="images/Sunny-4.jpg" alt="Sunny side Up 4" style="max-width: 96%; height: auto; margin-top: 20px;">` 
             },
             'metverwarring': { 
                 info: `<strong>Met verwarring in de wachtruimte</strong> (2024)<br>Performance, mise-en-scène<br><br><em>Immersive performance navigating around a counter. Participants wear jackets blending them into the architecture. Guided through a cycle of calculated confusion, the participants get stuck in a loop staging the impossibility of truly accessing the "other side".</em>
@@ -403,6 +407,7 @@
             if (!audioEl) return;
 
             if (audioEl.paused) {
+                audioEl.load(); // Ensures proper reloading/buffering context state
                 audioEl.play().then(() => {
                     updateResidusUI();
                 }).catch(e => {
