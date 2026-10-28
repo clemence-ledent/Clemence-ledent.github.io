@@ -105,7 +105,7 @@
         .horizontal-gallery::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
         .horizontal-gallery::-webkit-scrollbar-track { background: #f1f1f1; }
 
-        /* Waiting Line & Text Viewer Styles (Enlarged by 20%) */
+        /* Waiting Line & Text Viewer Styles */
         .waiting-line-frame {
             border: 1px solid #000;
             border-radius: 2px;
@@ -127,6 +127,12 @@
             height: auto;
             max-height: 93.6vh;
             box-sizing: border-box;
+        }
+
+        /* 20% smaller specifically for booklet layouts ('rigiditeit' and 'shop') */
+        .text-viewer-frame.booklet-frame {
+            max-width: 43.2vw; /* 54vw * 0.8 */
+            max-height: 74.88vh; /* 93.6vh * 0.8 */
         }
 
         .text-viewer-frame.no-border {
@@ -173,6 +179,11 @@
             align-items: center;
             position: relative;
             box-sizing: border-box;
+        }
+
+        /* Adjust right-aligner width dynamically for booklet views so controls line up perfectly */
+        .text-right-aligner.booklet-aligner {
+            max-width: 43.2vw;
         }
 
         #close-text-modal-btn {
@@ -375,7 +386,7 @@
                 <img id="text-viewer-right" class="text-viewer-frame" src="" alt="Text page right">
             </div>
             <!-- Navigation controls and close button aligned directly under and on the right side of the right page -->
-            <div class="text-right-aligner">
+            <div id="text-right-aligner" class="text-right-aligner">
                 <span id="close-text-modal-btn" onclick="closeTextViewer()">✕</span>
                 <div id="text-viewer-controls" style="margin: 12px 0 0 0;">
                     <div style="display: flex; gap: 15px; font-size: 22px; font-weight: bold; cursor: pointer; user-select: none;">
@@ -502,7 +513,7 @@
                 info: 'In collaboration with <strong>Claude Perischetti</strong> and <strong>Greta Petiziol</strong>.<br>10 days residency in the Mountains of North Italy.',
                 suboptions: {
                     '2026': ['other/braida/2.png', 'other/braida/21.png', 'other/braida/22.png', 'other/braida/23.png', 'other/braida/24.png', 'other/braida/25.png'],
-                    '2024': ['other/braida/1.png', 'other/braida/11.png', 'other/braida/12.png', 'other/braida/13.png', 'other/braida/14.png', 'other/braida/15.png']
+                    '2024': ['other/braida/1.JPG', 'other/braida/12.JPG', 'other/braida/13.JPG', 'other/braida/14.JPG', 'other/braida/15.JPG', 'other/braida/16.JPG']
                 }
             },
             'rotte': {
@@ -511,7 +522,7 @@
                 info: 'Experimental/musical/ambiant/electronic/theatrical event, once a year, a collaboration.',
                 suboptions: {
                     '1': Array.from({length: 17}, (_, i) => `other/takken/${i + 1}.png`),
-                    '2': Array.from({length: 23}, (_, i) => `other/takken/${i + 2}.png`),
+                    '2': ['other/takken/2.jpg', 'other/takken/21.jpg', 'other/takken/22.jpg', 'other/takken/24.JPG', 'other/takken/25.jpg', 'other/takken/26.jpg', 'other/takken/27.jpg', 'other/takken/28.JPG', 'other/takken/29.JPG', 'other/takken/211.JPG', 'other/takken/212.JPG', 'other/takken/213.JPG', 'other/takken/214.JPG', 'other/takken/215.JPG', 'other/takken/216.JPG', 'other/takken/217.JPG', 'other/takken/218.JPG'],
                     '3': Array.from({length: 36}, (_, i) => `other/takken/${i + 3}.png`)
                 }
             }
@@ -583,6 +594,18 @@
             const config = textConfigs[currentTextKey];
             const leftImg = document.getElementById('text-viewer-left');
             const rightImg = document.getElementById('text-viewer-right');
+            const aligner = document.getElementById('text-right-aligner');
+
+            // Apply specific class for booklet layout sizing and alignment
+            if (config.type === 'booklet') {
+                leftImg.classList.add('booklet-frame');
+                rightImg.classList.add('booklet-frame');
+                if (aligner) aligner.classList.add('booklet-aligner');
+            } else {
+                leftImg.classList.remove('booklet-frame');
+                rightImg.classList.remove('booklet-frame');
+                if (aligner) aligner.classList.remove('booklet-aligner');
+            }
 
             // Apply or remove border class based on configuration
             if (config.border) {
