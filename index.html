@@ -105,14 +105,14 @@
         .horizontal-gallery::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
         .horizontal-gallery::-webkit-scrollbar-track { background: #f1f1f1; }
 
-        /* Waiting Line Viewer Styles */
+        /* Waiting Line Viewer Styles (Enlarged by 20%: 42vw -> ~50.4vw, max-width 450px -> 540px) */
         .waiting-line-frame {
             border: 1px solid #000;
             border-radius: 2px;
             background: #fff;
             padding: 0;
-            width: 42vw;
-            max-width: 450px;
+            width: 50.4vw;
+            max-width: 540px;
             height: auto;
             object-fit: contain;
         }
@@ -312,10 +312,10 @@
                         <img id="wachtrij-left" class="waiting-line-frame" src="images/wachtrij/1.png" alt="Wachtrij page 1">
                         <img id="wachtrij-right" class="waiting-line-frame" src="images/wachtrij/2.png" alt="Wachtrij page 2">
                     </div>
-                    <div style="display: flex; justify-content: flex-end; max-width: 950px; margin: 12px auto 0 auto; padding-right: 15px;">
+                    <div style="display: flex; justify-content: flex-end; max-width: 1120px; margin: 12px auto 0 auto; padding-right: 15px;">
                         <div style="display: flex; gap: 15px; font-size: 20px; font-weight: bold; cursor: pointer; user-select: none;">
-                            <span onclick="prevWachtrijPages()" title="Previous pages">&lt;</span>
-                            <span onclick="nextWachtrijPages()" title="Next pages">&gt;</span>
+                            <span onclick="prevWachtrijPages()" title="Previous pages">&larr;</span>
+                            <span onclick="nextWachtrijPages()" title="Next pages">&rarr;</span>
                         </div>
                     </div>
                 </div>` 
