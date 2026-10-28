@@ -105,8 +105,8 @@
         .horizontal-gallery::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
         .horizontal-gallery::-webkit-scrollbar-track { background: #f1f1f1; }
 
-        /* Waiting Line Viewer Styles */
-        .waiting-line-frame {
+        /* Waiting Line & Text Viewer Styles */
+        .waiting-line-frame, .text-viewer-frame {
             border: 1px solid #000;
             border-radius: 2px;
             background: #fff;
@@ -114,7 +114,41 @@
             width: 50.4vw;
             max-width: 540px;
             height: auto;
+            max-height: 75vh;
             object-fit: contain;
+        }
+
+        /* Text Viewer Overlay / Modal */
+        #text-viewer-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(255, 255, 255, 0.96);
+            z-index: 400;
+            box-sizing: border-box;
+            padding: 50px 20px;
+            overflow-y: auto;
+        }
+        #text-viewer-modal.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        #close-text-modal-btn {
+            position: absolute;
+            top: 25px;
+            right: 35px;
+            cursor: pointer;
+            font-size: 24px;
+            font-weight: bold;
+            color: #000;
+            line-height: 1;
+            user-select: none;
+            z-index: 401;
         }
 
         /* Centered Pop-up Text Box for Image Descriptions */
@@ -264,6 +298,21 @@
         <div id="image-description-content"></div>
     </div>
 
+    <!-- Text Viewer Modal Popup -->
+    <div id="text-viewer-modal">
+        <span id="close-text-modal-btn" onclick="closeTextViewer()">✕</span>
+        <div style="display: flex; justify-content: center; gap: 20px; align-items: center; width: 100%;">
+            <img id="text-viewer-left" class="text-viewer-frame" src="" alt="Text page left">
+            <img id="text-viewer-right" class="text-viewer-frame" src="" alt="Text page right">
+        </div>
+        <div id="text-viewer-controls" style="width: 100%; display: flex; justify-content: flex-end; max-width: 1100px; margin: 15px auto 0 auto; padding-right: 20px;">
+            <div style="display: flex; gap: 15px; font-size: 22px; font-weight: bold; cursor: pointer; user-select: none;">
+                <span onclick="prevTextPages()" title="Previous page">&larr;</span>
+                <span onclick="nextTextPages()" title="Next page">&rarr;</span>
+            </div>
+        </div>
+    </div>
+
     <script>
         const tabs = ['Contact', 'Works', 'Collaborative projects', 'Text'];
         const workKeys = ['residus', 'kitchen', 'waitingline', 'chihuahua', 'boke', 'celebratie', 'abc', 'untitled', 'sunnyside', 'metverwarring'];
@@ -381,6 +430,83 @@
         const entryDot = document.getElementById('entry-dot');
         const container = document.getElementById('tab-dots');
         const display = document.getElementById('content-display');
+
+        /* Text Image Configs */
+        const textConfigs = {
+            'rigiditeit': {
+                folder: 'other/rigiditeit',
+                total: 16
+            }
+        };
+
+        let currentTextKey = null;
+        let currentTextPageIndex = 1; // 1-based page index
+
+        function openTextViewer(textKey) {
+            if (!textConfigs[textKey]) return;
+            currentTextKey = textKey;
+            currentTextPageIndex = 1;
+            updateTextViewer();
+            const modal = document.getElementById('text-viewer-modal');
+            if (modal) modal.classList.add('active');
+        }
+
+        function closeTextViewer() {
+            const modal = document.getElementById('text-viewer-modal');
+            if (modal) modal.classList.remove('active');
+        }
+
+        function updateTextViewer() {
+            if (!currentTextKey || !textConfigs[currentTextKey]) return;
+            const config = textConfigs[currentTextKey];
+            const leftImg = document.getElementById('text-viewer-left');
+            const rightImg = document.getElementById('text-viewer-right');
+
+            if (currentTextPageIndex === 1 || currentTextPageIndex === config.total) {
+                // Page 1 and Page 16 stand alone
+                leftImg.src = `${config.folder}/${currentTextPageIndex}.png`;
+                rightImg.style.display = 'none';
+            } else {
+                // Display two by two (e.g., 2 & 3, 4 & 5, ..., 14 & 15)
+                leftImg.src = `${config.folder}/${currentTextPageIndex}.png`;
+                if (currentTextPageIndex + 1 <= config.total) {
+                    rightImg.style.display = 'block';
+                    rightImg.src = `${config.folder}/${currentTextPageIndex + 1}.png`;
+                } else {
+                    rightImg.style.display = 'none';
+                }
+            }
+        }
+
+        function nextTextPages() {
+            if (!currentTextKey || !textConfigs[currentTextKey]) return;
+            const config = textConfigs[currentTextKey];
+            if (currentTextPageIndex === 1) {
+                currentTextPageIndex = 2;
+            } else if (currentTextPageIndex + 2 <= config.total) {
+                if (currentTextPageIndex + 2 === config.total) {
+                    // Jump to last standalone page 16
+                    currentTextPageIndex = config.total;
+                } else {
+                    currentTextPageIndex += 2;
+                }
+            }
+            updateTextViewer();
+        }
+
+        function prevTextPages() {
+            if (!currentTextKey || !textConfigs[currentTextKey]) return;
+            const config = textConfigs[currentTextKey];
+            if (currentTextPageIndex === config.total) {
+                // Return back to the last pair before 16 (i.e. 14 & 15)
+                currentTextPageIndex = config.total - 2;
+            } else if (currentTextPageIndex - 2 >= 2) {
+                currentTextPageIndex -= 2;
+            } else if (currentTextPageIndex === 2) {
+                currentTextPageIndex = 1;
+            }
+            updateTextViewer();
+        }
 
         /* Residus Audio Player Handler */
         let audioTimerInterval = null;
@@ -643,12 +769,8 @@
             } else if (tabName === 'Text') {
                 display.innerHTML = `
                     <div class="subnav-container">
-                        <a href="denkbeeldige-ruimte.html" class="trigger">De denkbeeldige ruimte</a>
-                        <a href="shopsign.html" class="trigger">De shopsign</a>
-                        <a href="tafelgebeuren.html" class="trigger">Het rigiditeitsgehalte van een tafelgebeuren</a>
-                        <a href="rigiditeitsgehalte.html" target="_blank" class="trigger">de rigiditeitsgehalte van een tafelgebeuren</a>
+                        <span class="trigger" onclick="openTextViewer('rigiditeit')">Het rigiditeitsgehalte van een tafelgebeuren</span>
                     </div><div id="content-area"></div>`;
-                if(autoOpenSub) showText(autoOpenSub);
             }
         }
 
