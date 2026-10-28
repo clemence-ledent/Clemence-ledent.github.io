@@ -291,6 +291,7 @@
                       '<div style="display: flex; align-items: center; gap: 15px; margin: 20px 0;">' +
                       '<div id="residus-audio-dot" class="dot" style="position: static; cursor: pointer; background: #fff;" onclick="toggleResidusAudio()" title="Play/Pause"></div>' +
                       '<span id="residus-timer" style="font-size: 15px; font-weight: 300; font-family: monospace;">0:00 / 0:00</span>' +
+                      '<audio id="residus-audio-element" src="other/Bartsoen.mp3" preload="auto" loop></audio>' +
                       '</div>' +
                       '<br><img src="images/Bartsoen-1-website.jpg" alt="Residus (Bartsoen)" style="max-width: 100%; height: auto; margin-top: 20px;"><br><br><img src="images/Bartsoen-2-website.jpg" alt="Residus (Bartsoen)" style="max-width: 100%; height: auto; margin-top: 20px;"><br><br><img src="images/Bartsoen-5-website.jpg" alt="Residus (Bartsoen)" style="max-width: 100%; height: auto; margin-top: 20px;"><br><br><img src="images/Bartsoen-6-website.jpg" alt="Residus (Bartsoen)" style="max-width: 100%; height: auto; margin-top: 20px;">' 
             },
@@ -328,13 +329,13 @@
                 info: '<strong>Boke kaas</strong> (2026)<br>Video performance<br><br><em>Three characters are making and eating a cheese sandwich. They stare just past the camera.</em><br><br><img src="images/boke-kaas-1-website.jpg" alt="Boke Kaas" style="max-width: 100%; height: auto; margin-top: 20px;"><br><br><img src="images/boke-kaas-2-website.jpg" alt="Boke Kaas" style="max-width: 100%; height: auto; margin-top: 20px;"><br><br><img src="images/boke-kaas-3-website.jpg" alt="Boke Kaas" style="max-width: 100%; height: auto; margin-top: 20px;">' 
             },
             'celebratie': { 
-                info: '<strong>celebratie compagnons</strong> (2026)<br>Sculptural installation<br><br><em>Curly ornaments that wish to celebrate the space.</em><br><br><video src="images/cc.mp4" autoplay loop muted playsinline style="max-width: 650px; width: 100%; height: auto; margin-top: 20px; border-radius: 2px;"></video>' 
+                info: '<strong>celebratie compagnons</strong> (2026)<br>Sculptural installation<br><br><em>Curly ornaments that wish to celebrate the space.</em><br><br><video src="other/cc.mp4" autoplay loop muted playsinline preload="auto" style="max-width: 650px; width: 100%; height: auto; margin-top: 20px; border-radius: 2px; display: block;"></video>' 
             },
             'abc': { 
                 info: '<strong>A, B, C</strong> (2025)<br>Video performance, script<br><br><em>Research on entropy (tested in a controlled environment). Seated at a table, one character attempts to contain the rising tension between the two others.</em><br><br><img src="images/ABC-1-website.png" alt="A, B, C" style="max-width: 100%; height: auto; margin-top: 20px;"><br><br><img src="images/ABC-2-website.png" alt="A, B, C" style="max-width: 100%; height: auto; margin-top: 20px;"><br><br><img src="images/ABC-3-website.png" alt="A, B, C" style="max-width: 100%; height: auto; margin-top: 20px;">' 
             },
             'untitled': { 
-                info: '<strong>Untitled (pas de mousquetaire)</strong> (2025)<br>Archival video, digital alteration<br><br><em>Archival video exploration featuring digital alteration.</em><br><br><video src="other/censure-video-website.mp4" autoplay loop muted playsinline style="max-width: 650px; width: 40%; height: auto; margin-top: 20px; border-radius: 2px;"></video>' 
+                info: '<strong>Untitled (pas de mousquetaire)</strong> (2025)<br>Archival video, digital alteration<br><br><em>Archival video exploration featuring digital alteration.</em><br><br><video src="other/censure-video-website.mp4" autoplay loop muted playsinline preload="auto" style="max-width: 650px; width: 100%; height: auto; margin-top: 20px; border-radius: 2px; display: block;"></video>' 
             },
             'sunnyside': { 
                 info: '<strong>Sunny side Up</strong> (2025)<br>Collage series, poster design<br><br><em>Presented during Le Bazar troué at Salvatore Ghent.</em><br><br><div class="horizontal-gallery"><img src="images/sunny-1.jpg" alt="Sunny side Up 1"><img src="images/sunny-2.jpg" alt="Sunny side Up 2"><img src="images/sunny-3.jpg" alt="Sunny side Up 3"><img src="images/sunny-4.jpg" alt="Sunny side Up 4"></div>' 
@@ -368,45 +369,48 @@
         const display = document.getElementById('content-display');
 
         /* Residus Audio Player Handler */
-        let residusAudio = null;
         let audioTimerInterval = null;
 
         function handleResidusAudio(isOpening) {
+            const audioEl = document.getElementById('residus-audio-element');
+            if (!audioEl) return;
+
             if (isOpening) {
-                if (!residusAudio) {
-                    residusAudio = new Audio('other/Bartsoen.mp3');
-                    residusAudio.loop = true;
-                    residusAudio.ontimeupdate = updateResidusUI;
-                    residusAudio.onloadedmetadata = updateResidusUI;
-                }
+                audioEl.ontimeupdate = updateResidusUI;
+                audioEl.onloadedmetadata = updateResidusUI;
                 updateResidusUI();
                 if (audioTimerInterval) clearInterval(audioTimerInterval);
                 audioTimerInterval = setInterval(updateResidusUI, 500);
             } else {
-                if (residusAudio) {
-                    residusAudio.pause();
-                    residusAudio.currentTime = 0;
-                }
+                audioEl.pause();
+                audioEl.currentTime = 0;
                 if (audioTimerInterval) clearInterval(audioTimerInterval);
             }
         }
 
         function toggleResidusAudio() {
-            if (!residusAudio) return;
-            if (residusAudio.paused) {
-                residusAudio.play().catch(e => console.log("Playback blocked:", e));
+            const audioEl = document.getElementById('residus-audio-element');
+            if (!audioEl) return;
+
+            if (audioEl.paused) {
+                audioEl.play().then(() => {
+                    updateResidusUI();
+                }).catch(e => {
+                    console.log("Audio playback error:", e);
+                });
             } else {
-                residusAudio.pause();
+                audioEl.pause();
+                updateResidusUI();
             }
-            updateResidusUI();
         }
 
         function updateResidusUI() {
             const dot = document.getElementById('residus-audio-dot');
             const timer = document.getElementById('residus-timer');
-            if (!residusAudio) return;
+            const audioEl = document.getElementById('residus-audio-element');
+            if (!audioEl) return;
 
-            let isPlaying = !residusAudio.paused && residusAudio.currentTime > 0 && !residusAudio.ended;
+            let isPlaying = !audioEl.paused && audioEl.currentTime > 0 && !audioEl.ended;
             if (dot) {
                 if (isPlaying) {
                     dot.style.background = 'rgb(0, 0, 255)';
@@ -417,10 +421,10 @@
                 }
             }
             if (timer) {
-                let curM = Math.floor(residusAudio.currentTime / 60);
-                let curS = Math.floor(residusAudio.currentTime % 60);
-                let durM = isNaN(residusAudio.duration) ? 0 : Math.floor(residusAudio.duration / 60);
-                let durS = isNaN(residusAudio.duration) ? 0 : Math.floor(residusAudio.duration % 60);
+                let curM = Math.floor(audioEl.currentTime / 60);
+                let curS = Math.floor(audioEl.currentTime % 60);
+                let durM = isNaN(audioEl.duration) ? 0 : Math.floor(audioEl.duration / 60);
+                let durS = isNaN(audioEl.duration) ? 0 : Math.floor(audioEl.duration % 60);
                 timer.textContent = `${curM}:${curS < 10 ? '0':''}${curS} / ${durM}:${durS < 10 ? '0':''}${durS}`;
             }
         }
