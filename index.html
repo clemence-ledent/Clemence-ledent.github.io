@@ -129,7 +129,7 @@
             box-sizing: border-box;
         }
 
-        /* Text Viewer Overlay / Modal (More transparent background) */
+        /* Text Viewer Overlay / Modal (Clairefontaine pale green paper tone with 0.7 opacity) */
         #text-viewer-modal {
             display: none;
             position: fixed;
@@ -137,7 +137,7 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: rgba(255, 255, 255, 0.7);
+            background: rgba(226, 239, 226, 0.7);
             backdrop-filter: blur(2px);
             z-index: 400;
             box-sizing: border-box;
@@ -153,16 +153,26 @@
         
         .text-booklet-container {
             width: 100%;
-            max-width: 1100px;
+            max-width: 900px;
             position: relative;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
 
+        /* Container that exactly matches the width of the right page/element for proper alignment */
+        .text-right-aligner {
+            width: 100%;
+            max-width: 45vw;
+            display: flex;
+            justify-content: flex-end;
+            position: relative;
+            box-sizing: border-box;
+        }
+
         #close-text-modal-btn {
             position: absolute;
-            top: -35px;
+            bottom: calc(100% + 8px);
             right: 0;
             cursor: pointer;
             font-size: 22px;
@@ -323,17 +333,19 @@
     <!-- Text Viewer Modal Popup -->
     <div id="text-viewer-modal">
         <div class="text-booklet-container">
-            <span id="close-text-modal-btn" onclick="closeTextViewer()">✕</span>
             <!-- Booklet image spread container without gap -->
-            <div id="text-spread-wrapper" style="display: flex; justify-content: center; gap: 0; align-items: center; width: 100%;">
+            <div id="text-spread-wrapper" style="display: flex; justify-content: center; gap: 0; align-items: center; width: 100%; position: relative;">
+                <span id="close-text-modal-btn" onclick="closeTextViewer()">✕</span>
                 <img id="text-viewer-left" class="text-viewer-frame" src="" alt="Text page left">
                 <img id="text-viewer-right" class="text-viewer-frame" src="" alt="Text page right">
             </div>
-            <!-- Navigation controls aligned under the right image position -->
-            <div id="text-viewer-controls" style="width: 100%; display: flex; justify-content: flex-end; margin: 12px 0 0 0;">
-                <div style="display: flex; gap: 15px; font-size: 22px; font-weight: bold; cursor: pointer; user-select: none;">
-                    <span onclick="prevTextPages()" title="Previous page">&larr;</span>
-                    <span onclick="nextTextPages()" title="Next page">&rarr;</span>
+            <!-- Navigation controls aligned directly under and on the right side of the right page -->
+            <div class="text-right-aligner">
+                <div id="text-viewer-controls" style="margin: 12px 0 0 0;">
+                    <div style="display: flex; gap: 15px; font-size: 22px; font-weight: bold; cursor: pointer; user-select: none;">
+                        <span onclick="prevTextPages()" title="Previous page">&larr;</span>
+                        <span onclick="nextTextPages()" title="Next page">&rarr;</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -457,11 +469,32 @@
         const container = document.getElementById('tab-dots');
         const display = document.getElementById('content-display');
 
-        /* Text Image Configs */
+        /* Text Image Configs for Booklet and Single Page Viewers */
         const textConfigs = {
             'rigiditeit': {
                 folder: 'other/rigiditeit',
-                total: 16
+                total: 16,
+                type: 'booklet'
+            },
+            'shop': {
+                folder: 'other/shop',
+                total: 12,
+                type: 'booklet'
+            },
+            'objet': {
+                folder: 'other/objet',
+                total: 13,
+                type: 'single'
+            },
+            'ruimte': {
+                folder: 'other/ruimte',
+                total: 15,
+                type: 'single'
+            },
+            'kantoor': {
+                folder: 'other/kantoor',
+                total: 17,
+                type: 'single'
             }
         };
 
@@ -488,36 +521,42 @@
             const leftImg = document.getElementById('text-viewer-left');
             const rightImg = document.getElementById('text-viewer-right');
 
-            if (currentTextPageIndex === 1) {
-                // Page 1 sits on the RIGHT side of the booklet spread
-                leftImg.style.visibility = 'hidden';
-                leftImg.style.display = 'block';
-                leftImg.src = `${config.folder}/1.png`; // reserve layout dimension
-
+            if (config.type === 'single') {
+                // For single page display setup (one page at a time)
+                leftImg.style.display = 'none';
                 rightImg.style.visibility = 'visible';
                 rightImg.style.display = 'block';
-                rightImg.src = `${config.folder}/1.png`;
-            } else if (currentTextPageIndex === config.total) {
-                // Page 16 sits on the LEFT side of the booklet spread
-                leftImg.style.visibility = 'visible';
-                leftImg.style.display = 'block';
-                leftImg.src = `${config.folder}/${config.total}.png`;
-
-                rightImg.style.visibility = 'hidden';
-                rightImg.style.display = 'block';
-                rightImg.src = `${config.folder}/${config.total}.png`; // reserve layout dimension
+                rightImg.src = `${config.folder}/${currentTextPageIndex}.png`;
             } else {
-                // Display two by two (e.g., 2 & 3, 4 & 5, ..., 14 & 15)
-                leftImg.style.visibility = 'visible';
-                leftImg.style.display = 'block';
-                leftImg.src = `${config.folder}/${currentTextPageIndex}.png`;
+                // For booklet display setup (spread with page 1 & final page standalone handling)
+                if (currentTextPageIndex === 1) {
+                    leftImg.style.visibility = 'hidden';
+                    leftImg.style.display = 'block';
+                    leftImg.src = `${config.folder}/1.png`;
 
-                if (currentTextPageIndex + 1 <= config.total) {
                     rightImg.style.visibility = 'visible';
                     rightImg.style.display = 'block';
-                    rightImg.src = `${config.folder}/${currentTextPageIndex + 1}.png`;
+                    rightImg.src = `${config.folder}/1.png`;
+                } else if (currentTextPageIndex === config.total) {
+                    leftImg.style.visibility = 'visible';
+                    leftImg.style.display = 'block';
+                    leftImg.src = `${config.folder}/${config.total}.png`;
+
+                    rightImg.style.visibility = 'hidden';
+                    rightImg.style.display = 'block';
+                    rightImg.src = `${config.folder}/${config.total}.png`;
                 } else {
-                    rightImg.style.display = 'none';
+                    leftImg.style.visibility = 'visible';
+                    leftImg.style.display = 'block';
+                    leftImg.src = `${config.folder}/${currentTextPageIndex}.png`;
+
+                    if (currentTextPageIndex + 1 <= config.total) {
+                        rightImg.style.visibility = 'visible';
+                        rightImg.style.display = 'block';
+                        rightImg.src = `${config.folder}/${currentTextPageIndex + 1}.png`;
+                    } else {
+                        rightImg.style.display = 'none';
+                    }
                 }
             }
         }
@@ -525,31 +564,45 @@
         function nextTextPages() {
             if (!currentTextKey || !textConfigs[currentTextKey]) return;
             const config = textConfigs[currentTextKey];
-            if (currentTextPageIndex === 1) {
-                currentTextPageIndex = 2;
-            } else if (currentTextPageIndex + 2 <= config.total) {
-                if (currentTextPageIndex + 2 === config.total) {
-                    // Jump to last standalone page 16
-                    currentTextPageIndex = config.total;
-                } else {
-                    currentTextPageIndex += 2;
+
+            if (config.type === 'single') {
+                if (currentTextPageIndex < config.total) {
+                    currentTextPageIndex++;
+                    updateTextViewer();
                 }
+            } else {
+                if (currentTextPageIndex === 1) {
+                    currentTextPageIndex = 2;
+                } else if (currentTextPageIndex + 2 <= config.total) {
+                    if (currentTextPageIndex + 2 === config.total) {
+                        currentTextPageIndex = config.total;
+                    } else {
+                        currentTextPageIndex += 2;
+                    }
+                }
+                updateTextViewer();
             }
-            updateTextViewer();
         }
 
         function prevTextPages() {
             if (!currentTextKey || !textConfigs[currentTextKey]) return;
             const config = textConfigs[currentTextKey];
-            if (currentTextPageIndex === config.total) {
-                // Return back to the last pair before 16 (i.e. 14 & 15)
-                currentTextPageIndex = config.total - 2;
-            } else if (currentTextPageIndex - 2 >= 2) {
-                currentTextPageIndex -= 2;
-            } else if (currentTextPageIndex === 2) {
-                currentTextPageIndex = 1;
+
+            if (config.type === 'single') {
+                if (currentTextPageIndex > 1) {
+                    currentTextPageIndex--;
+                    updateTextViewer();
+                }
+            } else {
+                if (currentTextPageIndex === config.total) {
+                    currentTextPageIndex = config.total - 2;
+                } else if (currentTextPageIndex - 2 >= 2) {
+                    currentTextPageIndex -= 2;
+                } else if (currentTextPageIndex === 2) {
+                    currentTextPageIndex = 1;
+                }
+                updateTextViewer();
             }
-            updateTextViewer();
         }
 
         /* Residus Audio Player Handler */
@@ -577,7 +630,7 @@
             if (!audioEl) return;
 
             if (audioEl.paused) {
-                audioEl.load(); // Ensures proper reloading/buffering context state
+                audioEl.load();
                 audioEl.play().then(() => {
                     updateResidusUI();
                 }).catch(e => {
@@ -616,10 +669,9 @@
 
         /* PNG Spread Navigation Handler for 'The waiting line' */
         let currentWachtrijIndex = 1; 
-        const totalWachtrijPages = 72; // Adjusted since 5 and 6 were removed
+        const totalWachtrijPages = 72;
 
         function getActualWachtrijFileNum(logicalIndex) {
-            // Since images 5 and 6 do not exist, shift any index >= 5 up by 2
             if (logicalIndex >= 5) {
                 return logicalIndex + 2;
             }
@@ -814,6 +866,10 @@
                 display.innerHTML = `
                     <div class="subnav-container">
                         <span class="trigger" onclick="openTextViewer('rigiditeit')">Het rigiditeitsgehalte van een tafelgebeuren</span>
+                        <span class="trigger" onclick="openTextViewer('shop')">Boodschap van algemeen nut</span>
+                        <span class="trigger" onclick="openTextViewer('objet')">L'objet trouvé</span>
+                        <span class="trigger" onclick="openTextViewer('ruimte')">De denkbeeldige ruimte</span>
+                        <span class="trigger" onclick="openTextViewer('kantoor')">Kruisbestuiving in kantoorlandschap</span>
                     </div><div id="content-area"></div>`;
             }
         }
