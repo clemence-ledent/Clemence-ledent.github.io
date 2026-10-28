@@ -166,22 +166,19 @@
             width: 100%;
             max-width: 54vw; /* Matches enlarged frame width */
             display: flex;
-            justify-content: flex-end;
+            justify-content: space-between;
+            align-items: center;
             position: relative;
             box-sizing: border-box;
         }
 
         #close-text-modal-btn {
-            position: absolute;
-            bottom: calc(100% + 8px);
-            right: 0;
             cursor: pointer;
             font-size: 22px;
             font-weight: 300;
             color: #000;
             line-height: 1;
             user-select: none;
-            z-index: 401;
         }
 
         /* Centered Pop-up Text Box for Image Descriptions */
@@ -336,12 +333,12 @@
         <div class="text-booklet-container">
             <!-- Booklet image spread container without gap -->
             <div id="text-spread-wrapper" style="display: flex; justify-content: center; gap: 0; align-items: center; width: 100%; position: relative;">
-                <span id="close-text-modal-btn" onclick="closeTextViewer()">✕</span>
                 <img id="text-viewer-left" class="text-viewer-frame" src="" alt="Text page left">
                 <img id="text-viewer-right" class="text-viewer-frame" src="" alt="Text page right">
             </div>
-            <!-- Navigation controls aligned directly under and on the right side of the right page -->
+            <!-- Navigation controls and close button aligned directly under and on the right side of the right page -->
             <div class="text-right-aligner">
+                <span id="close-text-modal-btn" onclick="closeTextViewer()">✕</span>
                 <div id="text-viewer-controls" style="margin: 12px 0 0 0;">
                     <div style="display: flex; gap: 15px; font-size: 22px; font-weight: bold; cursor: pointer; user-select: none;">
                         <span onclick="prevTextPages()" title="Previous page">&larr;</span>
