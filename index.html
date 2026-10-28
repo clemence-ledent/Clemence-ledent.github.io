@@ -119,16 +119,17 @@
 
         .text-viewer-frame {
             border: 1px solid #000;
-            border-radius: 2px;
+            border-radius: 0;
             background: #fff;
             padding: 0;
             width: auto;
             max-width: 45vw;
             height: auto;
             max-height: 78vh;
+            box-sizing: border-box;
         }
 
-        /* Text Viewer Overlay / Modal */
+        /* Text Viewer Overlay / Modal (More transparent background) */
         #text-viewer-modal {
             display: none;
             position: fixed;
@@ -136,7 +137,8 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: rgba(255, 255, 255, 0.96);
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(2px);
             z-index: 400;
             box-sizing: border-box;
             padding: 50px 20px;
@@ -148,13 +150,23 @@
             align-items: center;
             justify-content: center;
         }
+        
+        .text-booklet-container {
+            width: 100%;
+            max-width: 1100px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
         #close-text-modal-btn {
             position: absolute;
-            top: 25px;
-            right: 35px;
+            top: -35px;
+            right: 0;
             cursor: pointer;
-            font-size: 24px;
-            font-weight: bold;
+            font-size: 22px;
+            font-weight: 300;
             color: #000;
             line-height: 1;
             user-select: none;
@@ -310,15 +322,19 @@
 
     <!-- Text Viewer Modal Popup -->
     <div id="text-viewer-modal">
-        <span id="close-text-modal-btn" onclick="closeTextViewer()">✕</span>
-        <div style="display: flex; justify-content: center; gap: 20px; align-items: center; width: 100%;">
-            <img id="text-viewer-left" class="text-viewer-frame" src="" alt="Text page left">
-            <img id="text-viewer-right" class="text-viewer-frame" src="" alt="Text page right">
-        </div>
-        <div id="text-viewer-controls" style="width: 100%; display: flex; justify-content: flex-end; max-width: 1100px; margin: 15px auto 0 auto; padding-right: 20px;">
-            <div style="display: flex; gap: 15px; font-size: 22px; font-weight: bold; cursor: pointer; user-select: none;">
-                <span onclick="prevTextPages()" title="Previous page">&larr;</span>
-                <span onclick="nextTextPages()" title="Next page">&rarr;</span>
+        <div class="text-booklet-container">
+            <span id="close-text-modal-btn" onclick="closeTextViewer()">✕</span>
+            <!-- Booklet image spread container without gap -->
+            <div id="text-spread-wrapper" style="display: flex; justify-content: center; gap: 0; align-items: center; width: 100%;">
+                <img id="text-viewer-left" class="text-viewer-frame" src="" alt="Text page left">
+                <img id="text-viewer-right" class="text-viewer-frame" src="" alt="Text page right">
+            </div>
+            <!-- Navigation controls aligned under the right image position -->
+            <div id="text-viewer-controls" style="width: 100%; display: flex; justify-content: flex-end; margin: 12px 0 0 0;">
+                <div style="display: flex; gap: 15px; font-size: 22px; font-weight: bold; cursor: pointer; user-select: none;">
+                    <span onclick="prevTextPages()" title="Previous page">&larr;</span>
+                    <span onclick="nextTextPages()" title="Next page">&rarr;</span>
+                </div>
             </div>
         </div>
     </div>
@@ -472,14 +488,32 @@
             const leftImg = document.getElementById('text-viewer-left');
             const rightImg = document.getElementById('text-viewer-right');
 
-            if (currentTextPageIndex === 1 || currentTextPageIndex === config.total) {
-                // Page 1 and Page 16 stand alone
-                leftImg.src = `${config.folder}/${currentTextPageIndex}.png`;
-                rightImg.style.display = 'none';
+            if (currentTextPageIndex === 1) {
+                // Page 1 sits on the RIGHT side of the booklet spread
+                leftImg.style.visibility = 'hidden';
+                leftImg.style.display = 'block';
+                leftImg.src = `${config.folder}/1.png`; // reserve layout dimension
+
+                rightImg.style.visibility = 'visible';
+                rightImg.style.display = 'block';
+                rightImg.src = `${config.folder}/1.png`;
+            } else if (currentTextPageIndex === config.total) {
+                // Page 16 sits on the LEFT side of the booklet spread
+                leftImg.style.visibility = 'visible';
+                leftImg.style.display = 'block';
+                leftImg.src = `${config.folder}/${config.total}.png`;
+
+                rightImg.style.visibility = 'hidden';
+                rightImg.style.display = 'block';
+                rightImg.src = `${config.folder}/${config.total}.png`; // reserve layout dimension
             } else {
                 // Display two by two (e.g., 2 & 3, 4 & 5, ..., 14 & 15)
+                leftImg.style.visibility = 'visible';
+                leftImg.style.display = 'block';
                 leftImg.src = `${config.folder}/${currentTextPageIndex}.png`;
+
                 if (currentTextPageIndex + 1 <= config.total) {
+                    rightImg.style.visibility = 'visible';
                     rightImg.style.display = 'block';
                     rightImg.src = `${config.folder}/${currentTextPageIndex + 1}.png`;
                 } else {
