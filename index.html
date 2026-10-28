@@ -294,39 +294,50 @@
         /* Collaborative Projects Styling */
         .collab-trigger.active { text-decoration: underline; color: #000; }
         .collab-subnav {
-            display: flex;
+            display: inline-flex;
             gap: 20px;
-            margin-top: 20px;
-            margin-bottom: 25px;
-            font-size: 16px;
+            margin-top: 0;
+            margin-bottom: 0;
+            font-size: 18px;
+            align-items: center;
         }
-        .collab-subnav span {
+        .collab-subnav-inline {
+            display: inline-flex;
+            gap: 15px;
+            margin-left: 10px;
+            align-items: center;
+        }
+        .collab-subitem {
             cursor: pointer;
             color: #000;
             font-weight: 300;
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 24px;
+            height: 24px;
+            box-sizing: border-box;
         }
-        .collab-subnav span.active {
-            text-decoration: underline;
+        .collab-subitem.active {
+            background: #000;
+            border: 1.8px solid #000;
+            border-radius: 50%;
+            color: transparent;
         }
 
-        /* Collaborative single-viewer image layout styles */
+        /* Collaborative single-viewer image layout styles (20% bigger images) */
         .collab-single-viewer {
             margin-top: 20px;
-            max-width: 900px;
+            max-width: 1080px; /* 900px * 1.2 */
         }
         .collab-single-img {
             max-width: 100%;
             height: auto;
-            max-height: 70vh;
+            max-height: 84vh; /* 70vh * 1.2 */
             object-fit: contain;
             display: block;
             border-radius: 2px;
-        }
-        .collab-controls-right {
-            display: flex;
-            justify-content: flex-end;
-            max-width: 100%;
-            margin-top: 12px;
         }
 
         .filled-o { position: relative; }
@@ -334,6 +345,28 @@
             content: ""; position: absolute; width: 7px; height: 7px;
             background: #000; border-radius: 50%; top: 55%; left: 50%;
             transform: translate(-50%, -50%); z-index: -1;
+        }
+
+        /* Fixed Navigation Arrows for Collaborative Projects (positioned like Thank You Notes) */
+        #collab-nav-fixed {
+            position: absolute;
+            bottom: 30px;
+            right: 20px;
+            left: 20px;
+            display: none;
+            justify-content: flex-end;
+            pointer-events: none;
+            z-index: 105;
+        }
+        #collab-nav-fixed * { pointer-events: auto; }
+        .collab-arrows-controls {
+            display: flex;
+            gap: 15px;
+            font-size: 22px;
+            font-weight: bold;
+            cursor: pointer;
+            user-select: none;
+            color: #000;
         }
 
         /* ==========================================================================
@@ -820,6 +853,21 @@
             }
         }
 
+        function setFixedCollabNav(show) {
+            let collabNav = document.getElementById('collab-nav-fixed');
+            if (!collabNav) {
+                collabNav = document.createElement('div');
+                collabNav.id = 'collab-nav-fixed';
+                collabNav.innerHTML = `
+                    <div class="collab-arrows-controls">
+                        <span onclick="prevCollabImage()" title="Previous">&larr;</span>
+                        <span onclick="nextCollabImage()" title="Next">&rarr;</span>
+                    </div>`;
+                container.appendChild(collabNav);
+            }
+            collabNav.style.display = show ? 'flex' : 'none';
+        }
+
         function updateHash(mainTab, subKey = null, subSubKey = null) {
             let hash = '#' + mainTab.toLowerCase().replace(/\s+/g, '-');
             if (subKey) {
@@ -909,6 +957,7 @@
 
         function activateTab(tabName, subTabToOpen = null, subSubTabToOpen = null) {
             closeTextViewer();
+            setFixedCollabNav(false);
 
             document.querySelectorAll('.dot').forEach(d => {
                 if(d.id !== 'entry-dot') d.classList.remove('active');
@@ -963,7 +1012,7 @@
                     </div><div id="content-area"></div>`;
                 if(autoOpenSub) {
                     if(autoOpenSub === 'braida' || autoOpenSub === 'rotte') {
-                        showCollab(autoOpenSub, autoOpenSubSub || '2026');
+                        showCollab(autoOpenSub, autoOpenSubSub || (autoOpenSub === 'rotte' ? '1' : '2026'));
                     } else {
                         showCollab(autoOpenSub);
                     }
@@ -984,6 +1033,7 @@
 
         function showWork(key) {
             closeTextViewer();
+            setFixedCollabNav(false);
 
             document.querySelectorAll('.dot').forEach(d => {
                 if(d.id !== 'entry-dot') d.classList.remove('active');
@@ -1037,17 +1087,13 @@
             const contentArea = document.getElementById('content-area');
             if (!contentArea) return;
 
+            setFixedCollabNav(true);
+
             if (data.type === 'single-gallery') {
                 contentArea.innerHTML = `
                     <div>${data.info}</div>
                     <div class="collab-single-viewer">
                         <img id="collab-single-img" class="collab-single-img" src="${data.folder}/${data.files[0]}" alt="Collaborative image">
-                        <div class="collab-controls-right">
-                            <div style="display: flex; gap: 15px; font-size: 20px; font-weight: bold; cursor: pointer; user-select: none;">
-                                <span onclick="prevCollabImage()" title="Previous">&larr;</span>
-                                <span onclick="nextCollabImage()" title="Next">&rarr;</span>
-                            </div>
-                        </div>
                     </div>`;
                 updateHash('Collaborative projects', key);
             } else if (data.type === 'sub-options') {
@@ -1055,23 +1101,16 @@
                 const activeSub = (subKey && data.suboptions[subKey]) ? subKey : subKeys[0];
                 currentCollabState.subKey = activeSub;
 
-                let subNavHtml = `<div class="collab-subnav">`;
-                subKeys.forEach(sk => {
-                    subNavHtml += `<span class="${sk === activeSub ? 'active' : ''}" onclick="showCollab('${key}', '${sk}')">${sk}</span>`;
+                let subNavHtml = `<span class="collab-subnav-inline">`;
+                subKeys.forEach((sk, idx) => {
+                    subNavHtml += `<span class="collab-subitem ${sk === activeSub ? 'active' : ''}" onclick="showCollab('${key}', '${sk}')">${sk}</span>${idx < subKeys.length - 1 ? ' ' : ''}`;
                 });
-                subNavHtml += `</div>`;
+                subNavHtml += `</span>`;
 
                 contentArea.innerHTML = `
-                    <div>${data.info}</div>
-                    ${subNavHtml}
+                    <div>${data.info} ${subNavHtml}</div>
                     <div class="collab-single-viewer">
                         <img id="collab-single-img" class="collab-single-img" src="${data.suboptions[activeSub][0]}" alt="Collaborative image">
-                        <div class="collab-controls-right">
-                            <div style="display: flex; gap: 15px; font-size: 20px; font-weight: bold; cursor: pointer; user-select: none;">
-                                <span onclick="prevCollabImage()" title="Previous">&larr;</span>
-                                <span onclick="nextCollabImage()" title="Next">&rarr;</span>
-                            </div>
-                        </div>
                     </div>`;
                 updateHash('Collaborative projects', key, activeSub);
             }
