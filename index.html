@@ -105,7 +105,7 @@
         .horizontal-gallery::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
         .horizontal-gallery::-webkit-scrollbar-track { background: #f1f1f1; }
 
-        /* Waiting Line & Text Viewer Styles */
+        /* Waiting Line & Text Viewer Styles (Enlarged by 20%) */
         .waiting-line-frame {
             border: 1px solid #000;
             border-radius: 2px;
@@ -123,13 +123,13 @@
             background: #fff;
             padding: 0;
             width: auto;
-            max-width: 45vw;
+            max-width: 54vw; /* Increased by 20% from 45vw */
             height: auto;
-            max-height: 78vh;
+            max-height: 93.6vh; /* Increased by 20% from 78vh */
             box-sizing: border-box;
         }
 
-        /* Text Viewer Overlay / Modal (Clairefontaine pale green paper tone with 0.7 opacity) */
+        /* Text Viewer Overlay / Modal (Background overlay completely removed) */
         #text-viewer-modal {
             display: none;
             position: fixed;
@@ -137,12 +137,12 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: rgba(226, 239, 226, 0.7);
-            backdrop-filter: blur(2px);
+            background: transparent;
             z-index: 400;
             box-sizing: border-box;
             padding: 50px 20px;
             overflow-y: auto;
+            pointer-events: none; /* Allows clicking through the empty background areas if needed */
         }
         #text-viewer-modal.active {
             display: flex;
@@ -153,17 +153,18 @@
         
         .text-booklet-container {
             width: 100%;
-            max-width: 900px;
+            max-width: 1080px;
             position: relative;
             display: flex;
             flex-direction: column;
             align-items: center;
+            pointer-events: auto; /* Re-enables pointer events for modal content */
         }
 
         /* Container that exactly matches the width of the right page/element for proper alignment */
         .text-right-aligner {
             width: 100%;
-            max-width: 45vw;
+            max-width: 54vw; /* Matches enlarged frame width */
             display: flex;
             justify-content: flex-end;
             position: relative;
