@@ -106,7 +106,7 @@
         .horizontal-gallery::-webkit-scrollbar-track { background: #f1f1f1; }
 
         /* Waiting Line & Text Viewer Styles */
-        .waiting-line-frame, .text-viewer-frame {
+        .waiting-line-frame {
             border: 1px solid #000;
             border-radius: 2px;
             background: #fff;
@@ -114,8 +114,18 @@
             width: 50.4vw;
             max-width: 540px;
             height: auto;
-            max-height: 75vh;
             object-fit: contain;
+        }
+
+        .text-viewer-frame {
+            border: 1px solid #000;
+            border-radius: 2px;
+            background: #fff;
+            padding: 0;
+            width: auto;
+            max-width: 45vw;
+            height: auto;
+            max-height: 78vh;
         }
 
         /* Text Viewer Overlay / Modal */
