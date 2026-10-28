@@ -5,6 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
+    <!-- Favicon: Outline of a dot -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2240%22 fill=%22none%22 stroke=%22black%22 stroke-width=%2210%22/></svg>">
+
     <!-- SEO & Identity Meta Tags -->
     <title>Clémence Ledent — Visual Artist</title>
     <meta name="description" content="Portfolio of Clémence Ledent (°2000, Brussels). Working with scripts, video performances and in situ audio installations">
@@ -329,15 +332,32 @@
         /* Collaborative single-viewer image layout styles (20% bigger images) */
         .collab-single-viewer {
             margin-top: 20px;
-            max-width: 1080px; /* 900px * 1.2 */
+            max-width: 1080px;
         }
         .collab-single-img {
             max-width: 100%;
             height: auto;
-            max-height: 84vh; /* 70vh * 1.2 */
+            max-height: 84vh;
             object-fit: contain;
             display: block;
             border-radius: 2px;
+        }
+
+        /* Click Zones & Directional Arrow Cursors for Collaborative Images */
+        .collab-click-zone {
+            position: absolute;
+            top: 0;
+            width: 50%;
+            height: 100%;
+            z-index: 10;
+        }
+        .collab-zone-left {
+            left: 0;
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>'), w-resize;
+        }
+        .collab-zone-right {
+            right: 0;
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>'), e-resize;
         }
 
         .filled-o { position: relative; }
@@ -345,28 +365,6 @@
             content: ""; position: absolute; width: 7px; height: 7px;
             background: #000; border-radius: 50%; top: 55%; left: 50%;
             transform: translate(-50%, -50%); z-index: -1;
-        }
-
-        /* Fixed Navigation Arrows for Collaborative Projects (positioned like Thank You Notes) */
-        #collab-nav-fixed {
-            position: absolute;
-            bottom: 30px;
-            right: 20px;
-            left: 20px;
-            display: none;
-            justify-content: flex-end;
-            pointer-events: none;
-            z-index: 105;
-        }
-        #collab-nav-fixed * { pointer-events: auto; }
-        .collab-arrows-controls {
-            display: flex;
-            gap: 15px;
-            font-size: 22px;
-            font-weight: bold;
-            cursor: pointer;
-            user-select: none;
-            color: #000;
         }
 
         /* ==========================================================================
@@ -853,21 +851,6 @@
             }
         }
 
-        function setFixedCollabNav(show) {
-            let collabNav = document.getElementById('collab-nav-fixed');
-            if (!collabNav) {
-                collabNav = document.createElement('div');
-                collabNav.id = 'collab-nav-fixed';
-                collabNav.innerHTML = `
-                    <div class="collab-arrows-controls">
-                        <span onclick="prevCollabImage()" title="Previous">&larr;</span>
-                        <span onclick="nextCollabImage()" title="Next">&rarr;</span>
-                    </div>`;
-                container.appendChild(collabNav);
-            }
-            collabNav.style.display = show ? 'flex' : 'none';
-        }
-
         function updateHash(mainTab, subKey = null, subSubKey = null) {
             let hash = '#' + mainTab.toLowerCase().replace(/\s+/g, '-');
             if (subKey) {
@@ -957,7 +940,6 @@
 
         function activateTab(tabName, subTabToOpen = null, subSubTabToOpen = null) {
             closeTextViewer();
-            setFixedCollabNav(false);
 
             document.querySelectorAll('.dot').forEach(d => {
                 if(d.id !== 'entry-dot') d.classList.remove('active');
@@ -1033,7 +1015,6 @@
 
         function showWork(key) {
             closeTextViewer();
-            setFixedCollabNav(false);
 
             document.querySelectorAll('.dot').forEach(d => {
                 if(d.id !== 'entry-dot') d.classList.remove('active');
@@ -1087,13 +1068,15 @@
             const contentArea = document.getElementById('content-area');
             if (!contentArea) return;
 
-            setFixedCollabNav(true);
-
             if (data.type === 'single-gallery') {
                 contentArea.innerHTML = `
                     <div>${data.info}</div>
                     <div class="collab-single-viewer">
-                        <img id="collab-single-img" class="collab-single-img" src="${data.folder}/${data.files[0]}" alt="Collaborative image">
+                        <div style="position: relative; display: inline-block;">
+                            <img id="collab-single-img" class="collab-single-img" src="${data.folder}/${data.files[0]}" alt="Collaborative image">
+                            <div class="collab-click-zone collab-zone-left" onclick="prevCollabImage()" title="Previous"></div>
+                            <div class="collab-click-zone collab-zone-right" onclick="nextCollabImage()" title="Next"></div>
+                        </div>
                     </div>`;
                 updateHash('Collaborative projects', key);
             } else if (data.type === 'sub-options') {
@@ -1110,7 +1093,11 @@
                 contentArea.innerHTML = `
                     <div>${data.info} ${subNavHtml}</div>
                     <div class="collab-single-viewer">
-                        <img id="collab-single-img" class="collab-single-img" src="${data.suboptions[activeSub][0]}" alt="Collaborative image">
+                        <div style="position: relative; display: inline-block;">
+                            <img id="collab-single-img" class="collab-single-img" src="${data.suboptions[activeSub][0]}" alt="Collaborative image">
+                            <div class="collab-click-zone collab-zone-left" onclick="prevCollabImage()" title="Previous"></div>
+                            <div class="collab-click-zone collab-zone-right" onclick="nextCollabImage()" title="Next"></div>
+                        </div>
                     </div>`;
                 updateHash('Collaborative projects', key, activeSub);
             }
