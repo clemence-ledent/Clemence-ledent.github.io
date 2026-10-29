@@ -415,7 +415,7 @@
             const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
             const strokeColor = isDark ? 'white' : 'black';
             
-            const svgFavicon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="${strokeColor}" stroke-width="10"/><text x="50" y="68" font-size="50" font-family="Helvetica Neue, Arial, sans-serif" font-weight="bold" text-anchor="middle" fill="${strokeColor}">C</text></svg>`;
+            const svgFavicon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="${strokeColor}" stroke-width="7"/><text x="50" y="68" font-size="50" font-family="Helvetica Neue, Arial, sans-serif" font-weight="bold" text-anchor="middle" fill="${strokeColor}">C</text></svg>`;
             
             document.getElementById('dynamic-favicon').href = 'data:image/svg+xml,' + encodeURIComponent(svgFavicon);
         }
