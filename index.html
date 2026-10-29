@@ -296,8 +296,34 @@
             color: transparent; 
         }
 
-        /* Collaborative Projects Styling */
-        .collab-trigger.active { text-decoration: underline; color: #000; }
+        /* Collaborative Projects Styling (Right Column Subtabs & Triggers) */
+        .collab-trigger {
+            cursor: pointer;
+            color: #000;
+            font-weight: 400;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            pointer-events: auto;
+            box-sizing: border-box;
+            padding: 0 8px;
+            text-align: center;
+            white-space: nowrap;
+            height: 32px;
+            line-height: 32px;
+            font-size: 16px;
+        }
+        .collab-trigger.visible { display: inline-flex; }
+        
+        /* Outline dot behind/on top of title when active */
+        .collab-trigger.active {
+            border: 1.8px solid #000;
+            border-radius: 16px;
+            background: transparent;
+            text-decoration: none;
+        }
+
         .collab-subnav {
             display: inline-flex;
             gap: 20px;
@@ -334,13 +360,14 @@
             color: #000 !important;
         }
 
-        /* Collaborative stacked image list layout */
+        /* Collaborative stacked image list layout (Left-aligned matching main website content) */
         .collab-stacked-viewer {
             margin-top: 25px;
             display: flex;
             flex-direction: column;
             gap: 30px;
-            max-width: 1080px;
+            max-width: 900px;
+            align-items: flex-start;
         }
         .collab-stacked-img {
             max-width: 100%;
@@ -442,6 +469,7 @@
     <script>
         const tabs = ['Contact', 'Works', 'Collaborative projects', 'Text'];
         const workKeys = ['residus', 'kitchen', 'waitingline', 'chihuahua', 'boke', 'celebratie', 'abc', 'untitled', 'sunnyside', 'metverwarring'];
+        const collabKeys = ['troue', 'braida', 'rotte'];
 
         /* Descriptions for Kitchen Images */
         const kitchenDescriptions = {
@@ -551,7 +579,7 @@
             'braida': {
                 type: 'sub-options',
                 title: 'Braida',
-                info: 'In collaboration with Claude Perischetti and Greta Petiziol</strong>.<br>10 days residency in the Mountains of North Italy.',
+                info: 'In collaboration with Claude Perischetti and Greta Petiziol.<br>10 days residency in the Mountains of North Italy.',
                 suboptions: {
                     '2026': ['other/braida/2.png', 'other/braida/21.png', 'other/braida/22.png', 'other/braida/23.png', 'other/braida/24.png', 'other/braida/25.png'],
                     '2024': ['other/braida/1.JPG', 'other/braida/12.JPG', 'other/braida/13.JPG', 'other/braida/14.JPG', 'other/braida/15.JPG', 'other/braida/16.JPG']
@@ -954,6 +982,56 @@
             container.appendChild(thankYouBox);
         }
 
+        function initializeCollabNavigation() {
+            container.innerHTML = '';
+            
+            let collabItems = [
+                { key: 'troue', label: 'Le bazar tr<span class="filled-o">o</span>ué' },
+                { key: 'braida', label: 'Sonnambula' },
+                { key: 'rotte', label: 'Alle rotte takken' }
+            ];
+
+            let placedCoordinates = [];
+
+            collabItems.forEach((item) => {
+                const el = document.createElement('div');
+                let posX, posY, overlapping;
+                let attempts = 0;
+
+                do {
+                    overlapping = false;
+                    posX = Math.random() * (window.innerWidth * 0.15 - 80) + 10;
+                    posY = Math.random() * (window.innerHeight - 180) + 40;
+
+                    for (let p of placedCoordinates) {
+                        let dx = p.x - posX;
+                        let dy = p.y - posY;
+                        let distance = Math.sqrt(dx * dx + dy * dy);
+                        if (distance < 60) {
+                            overlapping = true;
+                            break;
+                        }
+                    }
+                    attempts++;
+                } while (overlapping && attempts < 50);
+
+                placedCoordinates.push({ x: posX, y: posY });
+
+                el.className = 'collab-trigger trigger visible';
+                el.id = `collab-${item.key}`;
+                el.style.top = posY + 'px';
+                el.style.right = posX + 'px';
+                el.innerHTML = item.label;
+                el.onclick = () => showCollab(item.key);
+                
+                container.appendChild(el);
+            });
+
+            const thankYouBox = document.createElement('div');
+            thankYouBox.id = 'thank-you-note';
+            container.appendChild(thankYouBox);
+        }
+
         function activateTab(tabName, subTabToOpen = null, subSubTabToOpen = null) {
             closeTextViewer();
 
@@ -963,10 +1041,9 @@
             const dot = document.getElementById(`dot-${tabName}`);
             if (dot) dot.classList.add('active');
 
-            document.querySelectorAll('.work-trigger').forEach(wt => {
-                if (tabName === 'Works') wt.classList.add('visible');
-                else wt.classList.remove('visible');
-            });
+            if (tabName !== 'Works') {
+                document.querySelectorAll('.work-trigger').forEach(wt => wt.classList.remove('visible'));
+            }
 
             if (subTabToOpen !== 'residus') {
                 handleResidusAudio(false);
@@ -985,16 +1062,18 @@
             display.innerHTML = '';
             
             if (tabName === 'Contact') {
+                initializeNavigation();
                 display.innerHTML = `
                     <div class="blue-text">
                         <div>Clémence Ledent</div><div>°2000, Brussels</div>
                         <div>ledent.clemence@gmail.com</div>
                     </div>
                     <div class="contact-bio">
-                        <p>Clémence Ledent explores the invisible scripts and social codes that define our daily behaviour. Informed by her background in architecture, she examines space, function, and the impact they have on the body. Her practice is scenario-based: each project begins with an autopsy of the structures that determine how we move, wait, listen, or act. Echoing Nathalie Sarraute’s notion of tropisms, she seeks to capture the minute, imperceptible movements beneath the surface, blurring the lines between human agency and ingrained automatisms.</p>
+                        <p>Clémence Ledent explores the invisible scripts and social codes that define our daily behaviour. Informed by her background in architecture, he examines space, function, and the impact they have on the body. Her practice is scenario-based: each project begins with an autopsy of the structures that determine how we move, wait, listen, or act. Echoing Nathalie Sarraute’s notion of tropisms, she seeks to capture the minute, imperceptible movements beneath the surface, blurring the lines between human agency and ingrained automatisms.</p>
                         <p>The concept of ‘presence in absence’ is central to her work. By underlining the subtle sounds embedded in our daily gestures, or by deconstructing those gestures into singular happenings, Ledent shifts the spectator into an almost voyeuristic position toward how we carry ourselves. What appears playful or absurd ultimately reveals the orchestrated fragility of how we live with and alongside one another.</p>
                     </div>`;
             } else if (tabName === 'Works') {
+                initializeNavigation();
                 display.innerHTML = `<div id="content-area"></div>`;
                 if(autoOpenSub) {
                     showWork(autoOpenSub);
@@ -1002,12 +1081,8 @@
                     document.getElementById('content-area').innerHTML = '';
                 }
             } else if (tabName === 'Collaborative projects') {
-                display.innerHTML = `
-                    <div class="works-nav">
-                        <span class="collab-trigger trigger" id="collab-troue" onclick="showCollab('troue')">Le bazar tr<span class="filled-o">o</span>ué</span>
-                        <span class="collab-trigger trigger" id="collab-braida" onclick="showCollab('braida')">Sonnambula</span>
-                        <span class="collab-trigger trigger" id="collab-rotte" onclick="showCollab('rotte')">Alle rotte takken</span>
-                    </div><div id="content-area"></div>`;
+                initializeCollabNavigation();
+                display.innerHTML = `<div id="content-area"></div>`;
                 if(autoOpenSub) {
                     if(autoOpenSub === 'braida' || autoOpenSub === 'rotte') {
                         showCollab(autoOpenSub, autoOpenSubSub || (autoOpenSub === 'rotte' ? '1' : '2026'));
@@ -1018,6 +1093,7 @@
                     showCollab('troue');
                 }
             } else if (tabName === 'Text') {
+                initializeNavigation();
                 display.innerHTML = `
                     <div class="subnav-container">
                         <span class="trigger" onclick="openTextViewer('rigiditeit')">Het rigiditeitsgehalte van een tafelgebeuren</span>
@@ -1150,7 +1226,11 @@
         window.addEventListener('DOMContentLoaded', () => {
             if (window.location.hash) {
                 entryDot.classList.add('transformed');
-                initializeNavigation();
+                if (window.location.hash.startsWith('#collaborative-projects') || window.location.hash.startsWith('#collab')) {
+                    // Let activateTab/renderTab handle layout
+                } else {
+                    initializeNavigation();
+                }
                 parseHashAndNavigate();
             }
         });
