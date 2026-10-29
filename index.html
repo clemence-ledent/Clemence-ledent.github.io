@@ -9,7 +9,7 @@
     <link id="dynamic-favicon" rel="icon" href="">
 
     <!-- Minimalist title -->
-    <title>Clémence Ledent</title>
+    <title>.</title>
 
     <!-- SEO & Identity Meta Tags -->
     <meta name="description" content="Portfolio of Clémence Ledent (°2000, Brussels). Working with scripts, video performances and in situ audio installations">
@@ -481,8 +481,10 @@
         const worksData = {
             'residus': { 
                 info: '<strong>Residu_1 (Bartosen)</strong> (2026)<br>In situ sound installation: obsessively tidied conference room, handmade speakers<br><br><em>A staging of presence through absence. Speakers are scattered throughout the space, emitting commonplace sounds of four invisible characters. The work uses ambient sound to trigger a hyper-awareness of the physical space and the bodies that occupy it.</em><br><br>' +
-                      '<div style="margin: 20px 0;">' +
-                      '<audio id="residus-audio-element" controls preload="auto" style="width: 100%; max-width: 400px; display: block;">' +
+                      '<div style="display: flex; align-items: center; gap: 15px; margin: 20px 0;">' +
+                      '<div id="residus-audio-dot" class="dot" style="position: static; cursor: pointer; background: #fff;" onclick="toggleResidusAudio()" title="Play/Pause"></div>' +
+                      '<span id="residus-timer" style="font-size: 15px; font-weight: 300; font-family: monospace;">0:00 / 0:00</span>' +
+                      '<audio id="residus-audio-element" preload="auto" loop>' +
                       '<source src="other/Bartsoen.mp3" type="audio/mpeg">' +
                       '<source src="other/Bartsoen.wav" type="audio/wav">' +
                       'Your browser does not support the audio element.' +
@@ -763,13 +765,65 @@
             }
         }
 
-        /* Audio handling helper */
+        /* Residus Audio Player Handler */
+        let audioTimerInterval = null;
+
         function handleResidusAudio(isOpening) {
             const audioEl = document.getElementById('residus-audio-element');
             if (!audioEl) return;
-            if (!isOpening) {
+
+            if (isOpening) {
+                audioEl.ontimeupdate = updateResidusUI;
+                audioEl.onloadedmetadata = updateResidusUI;
+                updateResidusUI();
+                if (audioTimerInterval) clearInterval(audioTimerInterval);
+                audioTimerInterval = setInterval(updateResidusUI, 500);
+            } else {
                 audioEl.pause();
                 audioEl.currentTime = 0;
+                if (audioTimerInterval) clearInterval(audioTimerInterval);
+            }
+        }
+
+        function toggleResidusAudio() {
+            const audioEl = document.getElementById('residus-audio-element');
+            if (!audioEl) return;
+
+            if (audioEl.paused) {
+                audioEl.load();
+                audioEl.play().then(() => {
+                    updateResidusUI();
+                }).catch(e => {
+                    console.log("Audio playback error:", e);
+                });
+            } else {
+                audioEl.pause();
+                updateResidusUI();
+            }
+        }
+
+        function updateResidusUI() {
+            const dot = document.getElementById('residus-audio-dot');
+            const timer = document.getElementById('residus-timer');
+            const audioEl = document.getElementById('residus-audio-element');
+            if (!audioEl) return;
+
+            let isPlaying = !audioEl.paused && audioEl.currentTime > 0 && !audioEl.ended;
+            if (dot) {
+                if (isPlaying) {
+                    dot.style.background = 'rgb(0, 0, 255)';
+                    dot.style.borderColor = 'rgb(0, 0, 255)';
+                } else {
+                    dot.style.background = '#fff';
+                    dot.style.borderColor = '#000';
+                }
+            }
+            if (timer) {
+                let curM = Math.floor(audioEl.currentTime / 60);
+                let curS = Math.floor(audioEl.currentTime % 60);
+                let durM = isNaN(audioEl.duration) ? 0 : Math.floor(audioEl.duration / 60);
+                let durS = isNaN(audioEl.duration) ? 0 : Math.floor(audioEl.duration % 60);
+                timer.textContent = `${curM}:${curS < 10 ? '0':''}${curS} / ${durM}:${durS < 10 ? '0':''}${durS}`;
             }
         }
 
@@ -1085,12 +1139,17 @@
                 display.innerHTML = `<div id="content-area"></div>`;
             }
 
-            if (key !== 'residus') {
+            if (key === 'residus') {
+                handleResidusAudio(true);
+            } else {
                 handleResidusAudio(false);
             }
 
             if (worksData[key]) {
                 document.getElementById('content-area').innerHTML = worksData[key].info;
+                if (key === 'residus') {
+                    updateResidusUI();
+                }
             }
 
             if (key === 'waitingline') {
