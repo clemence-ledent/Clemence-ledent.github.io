@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Residu_1 — Clémence Ledent</title>
+    
+    <style>
+        body {
+            margin: 0;
+            background: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            position: relative;
+        }
+
+        #player-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            position: absolute;
+        }
+
+        /* De centrale stip (32px met zwarte rand) */
+        .dot {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #000;
+            border: 1.8px solid #000;
+            box-sizing: border-box;
+            cursor: pointer;
+            transition: background 0.3s, border-color 0.3s;
+        }
+
+        /* Actieve status: wit met blauwe omlijning */
+        .dot.active {
+            background: #fff;
+            border-color: rgb(0, 0, 255);
+        }
+
+        /* Timer stijl */
+        #audio-timer {
+            font-size: 15px;
+            font-weight: 300;
+            font-family: monospace;
+            color: #000;
+            user-select: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="player-container">
+        <!-- De centrale interactieve stip -->
+        <div class="dot" id="central-dot" onclick="toggleAudio()" title="Play/Pause"></div>
+        
+        <!-- Timer weergave -->
+        <div id="audio-timer">0:00 / 0:00</div>
+    </div>
+
+    <!-- HTML5 Audio element (gekoppeld aan je lokale bestand) -->
+    <audio id="local-audio" preload="metadata" loop>
+        <source src="other/Bartsoen.mp3" type="audio/mpeg">
+        <source src="other/residu-un.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <script>
+        const dot = document.getElementById('central-dot');
+        const timerEl = document.getElementById('audio-timer');
+        const audio = document.getElementById('local-audio');
+
+        function formatTime(secs) {
+            if (isNaN(secs) || secs <= 0) return "0:00";
+            let mins = Math.floor(secs / 60);
+            let remainingSecs = Math.floor(secs % 60);
+            return `${mins}:${remainingSecs < 10 ? '0' : ''}${remainingSecs}`;
+        }
+
+        // Zodra de metadata geladen is, tonen we de totale duur
+        audio.addEventListener('loadedmetadata', () => {
+            timerEl.textContent = `0:00 / ${formatTime(audio.duration)}`;
+        });
+
+        // Update de timer op basis van de voortgang van het audiobestand
+        audio.addEventListener('timeupdate', () => {
+            let current = formatTime(audio.currentTime);
+            let duration = formatTime(audio.duration);
+            timerEl.textContent = `${current} / ${duration}`;
+        });
+
+        // Reset de knop als het geluid stopt/eindigt
+        audio.addEventListener('ended', () => {
+            dot.classList.remove('active');
+        });
+
+        function toggleAudio() {
+            if (audio.paused) {
+                audio.play().then(() => {
+                    dot.classList.add('active');
+                }).catch(err => {
+                    console.log("Afspelen geblokkeerd of bestand niet gevonden:", err);
+                    alert("Controleer of het audiobestand in de map 'other' staat.");
+                });
+            } else {
+                audio.pause();
+                dot.classList.remove('active');
+            }
+        }
+    </script>
+</body>
+</html>
