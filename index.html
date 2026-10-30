@@ -868,20 +868,20 @@
         }
 
         function updateHash(mainTab, subKey = null, subSubKey = null) {
-            let hash = '#' + mainTab.toLowerCase().replace(/\s+/g, '-');
-            if (subKey) {
-                if (mainTab === 'Works') {
-                    const idx = workKeys.indexOf(subKey);
-                    if (idx !== -1) hash += '-' + (idx + 1);
-                    else hash += '-' + subKey;
-                } else if (mainTab === 'Collaborative projects') {
-                    hash += '-' + subKey;
-                    if (subSubKey) hash += '-' + subSubKey;
-                } else {
-                    hash += '-' + subKey;
+            if (mainTab === 'Works' && subKey) {
+                window.location.hash = '#' + subKey;
+            } else {
+                let hash = '#' + mainTab.toLowerCase().replace(/\s+/g, '-');
+                if (subKey) {
+                    if (mainTab === 'Collaborative projects') {
+                        hash += '-' + subKey;
+                        if (subSubKey) hash += '-' + subSubKey;
+                    } else {
+                        hash += '-' + subKey;
+                    }
                 }
+                window.location.hash = hash;
             }
-            window.location.hash = hash;
         }
 
         function setThankYouNote(key = null) {
@@ -1129,6 +1129,8 @@
                 activateTab('Contact');
             } else if (hash === 'works') {
                 activateTab('Works');
+            } else if (workKeys.includes(hash)) {
+                activateTab('Works', hash);
             } else if (hash.startsWith('works-')) {
                 const sub = hash.replace('works-', '');
                 let workKey = sub;
