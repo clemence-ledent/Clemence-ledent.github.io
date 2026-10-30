@@ -290,40 +290,14 @@
         }
         .work-trigger.visible { display: inline-flex; }
         .work-trigger.active {
-            background: rgb(0, 0, 255); 
-            border: 1.8px solid rgb(0, 0, 255); 
+            background: #000; 
+            border: 1.8px solid #000; 
             border-radius: 50%; 
             color: transparent; 
         }
 
-        /* Collaborative Projects Styling (Scatter Triggers) */
-        .collab-trigger {
-            cursor: pointer;
-            color: #000;
-            font-weight: 400;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            position: absolute;
-            pointer-events: auto;
-            box-sizing: border-box;
-            padding: 0 8px;
-            text-align: center;
-            white-space: nowrap;
-            height: 32px;
-            line-height: 32px;
-            font-size: 16px;
-        }
-        .collab-trigger.visible { display: inline-flex; }
-        
-        .collab-trigger.active {
-            border: 1.8px solid rgb(0, 0, 255);
-            border-radius: 16px;
-            background: transparent;
-            text-decoration: none;
-            color: rgb(0, 0, 255);
-        }
-
+        /* Collaborative Projects Styling */
+        .collab-trigger.active { text-decoration: underline; color: #000; }
         .collab-subnav {
             display: inline-flex;
             gap: 20px;
@@ -353,19 +327,20 @@
             box-sizing: border-box;
             font-size: 18px;
         }
+        /* Black outline dot without fill when active */
         .collab-subitem.active {
             background: transparent !important;
-            border: 1.8px solid rgb(0, 0, 255) !important;
-            color: rgb(0, 0, 255) !important;
+            border: 1.8px solid #000 !important;
+            color: #000 !important;
         }
 
+        /* Collaborative stacked image list layout */
         .collab-stacked-viewer {
             margin-top: 25px;
             display: flex;
             flex-direction: column;
             gap: 30px;
-            max-width: 900px;
-            align-items: flex-start;
+            max-width: 1080px;
         }
         .collab-stacked-img {
             max-width: 100%;
@@ -379,7 +354,7 @@
         .filled-o { position: relative; }
         .collab-trigger.active .filled-o::before {
             content: ""; position: absolute; width: 7px; height: 7px;
-            background: rgb(0, 0, 255); border-radius: 50%; top: 55%; left: 50%;
+            background: #000; border-radius: 50%; top: 55%; left: 50%;
             transform: translate(-50%, -50%); z-index: -1;
         }
 
@@ -415,11 +390,13 @@
             const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
             const strokeColor = isDark ? 'white' : 'black';
             
+            // Generate dynamic SVG data URI with corresponding stroke color
             const svgFavicon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="${strokeColor}" stroke-width="10"/><text x="50" y="68" font-size="50" font-family="Helvetica Neue, Arial, sans-serif" font-weight="bold" text-anchor="middle" fill="${strokeColor}">C</text></svg>`;
             
             document.getElementById('dynamic-favicon').href = 'data:image/svg+xml,' + encodeURIComponent(svgFavicon);
         }
 
+        // Run on load and listen for future browser theme changes
         window.addEventListener('DOMContentLoaded', () => {
             updateFaviconAndTheme();
             window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateFaviconAndTheme);
@@ -444,10 +421,12 @@
     <!-- Text Viewer Modal Popup -->
     <div id="text-viewer-modal">
         <div class="text-booklet-container">
+            <!-- Booklet image spread container without gap -->
             <div id="text-spread-wrapper" style="display: flex; justify-content: center; gap: 0; align-items: center; width: 100%; position: relative;">
                 <img id="text-viewer-left" class="text-viewer-frame" src="" alt="Text page left">
                 <img id="text-viewer-right" class="text-viewer-frame" src="" alt="Text page right">
             </div>
+            <!-- Navigation controls and close button aligned directly under and on the right side of the right page -->
             <div id="text-right-aligner" class="text-right-aligner">
                 <span id="close-text-modal-btn" onclick="closeTextViewer()">✕</span>
                 <div id="text-viewer-controls" style="margin: 12px 0 0 0;">
@@ -461,9 +440,8 @@
     </div>
 
     <script>
-        const tabs = ['Works', 'Contact', 'Text', 'Collaborative projects'];
+        const tabs = ['Contact', 'Works', 'Collaborative projects', 'Text'];
         const workKeys = ['residus', 'kitchen', 'waitingline', 'chihuahua', 'boke', 'celebratie', 'abc', 'untitled', 'sunnyside', 'metverwarring'];
-        const collabKeys = ['troue', 'braida', 'rotte'];
 
         /* Descriptions for Kitchen Images */
         const kitchenDescriptions = {
@@ -573,7 +551,7 @@
             'braida': {
                 type: 'sub-options',
                 title: 'Braida',
-                info: 'In collaboration with Claude Perischetti and Greta Petiziol.<br>10 days residency in the Mountains of North Italy.',
+                info: 'In collaboration with Claude Perischetti and Greta Petiziol</strong>.<br>10 days residency in the Mountains of North Italy.',
                 suboptions: {
                     '2026': ['other/braida/2.png', 'other/braida/21.png', 'other/braida/22.png', 'other/braida/23.png', 'other/braida/24.png', 'other/braida/25.png'],
                     '2024': ['other/braida/1.JPG', 'other/braida/12.JPG', 'other/braida/13.JPG', 'other/braida/14.JPG', 'other/braida/15.JPG', 'other/braida/16.JPG']
@@ -642,7 +620,7 @@
         };
 
         let currentTextKey = null;
-        let currentTextPageIndex = 1;
+        let currentTextPageIndex = 1; // 1-based page index
 
         function openTextViewer(textKey) {
             if (!textConfigs[textKey]) return;
@@ -665,6 +643,7 @@
             const rightImg = document.getElementById('text-viewer-right');
             const aligner = document.getElementById('text-right-aligner');
 
+            // Apply specific class for booklet layout sizing and alignment
             if (config.type === 'booklet') {
                 leftImg.classList.add('booklet-frame');
                 rightImg.classList.add('booklet-frame');
@@ -675,6 +654,7 @@
                 if (aligner) aligner.classList.remove('booklet-aligner');
             }
 
+            // Apply or remove border class based on configuration
             if (config.border) {
                 leftImg.classList.remove('no-border');
                 rightImg.classList.remove('no-border');
@@ -684,11 +664,13 @@
             }
 
             if (config.type === 'single') {
+                // For single page display setup (one page at a time)
                 leftImg.style.display = 'none';
                 rightImg.style.visibility = 'visible';
                 rightImg.style.display = 'block';
                 rightImg.src = `${config.folder}/${currentTextPageIndex}.png`;
             } else {
+                // For booklet display setup (spread with page 1 & final page standalone handling)
                 if (currentTextPageIndex === 1) {
                     leftImg.style.visibility = 'hidden';
                     leftImg.style.display = 'block';
@@ -886,20 +868,20 @@
         }
 
         function updateHash(mainTab, subKey = null, subSubKey = null) {
-            if (mainTab === 'Works' && subKey) {
-                window.location.hash = '#' + subKey;
-            } else {
-                let hash = '#' + mainTab.toLowerCase().replace(/\s+/g, '-');
-                if (subKey) {
-                    if (mainTab === 'Collaborative projects') {
-                        hash += '-' + subKey;
-                        if (subSubKey) hash += '-' + subSubKey;
-                    } else {
-                        hash += '-' + subKey;
-                    }
+            let hash = '#' + mainTab.toLowerCase().replace(/\s+/g, '-');
+            if (subKey) {
+                if (mainTab === 'Works') {
+                    const idx = workKeys.indexOf(subKey);
+                    if (idx !== -1) hash += '-' + (idx + 1);
+                    else hash += '-' + subKey;
+                } else if (mainTab === 'Collaborative projects') {
+                    hash += '-' + subKey;
+                    if (subSubKey) hash += '-' + subSubKey;
+                } else {
+                    hash += '-' + subKey;
                 }
-                window.location.hash = hash;
             }
+            window.location.hash = hash;
         }
 
         function setThankYouNote(key = null) {
@@ -916,14 +898,12 @@
             }
         }
 
-        function initializeMainNavigation(activeTabName = null) {
+        function initializeNavigation() {
             container.innerHTML = '';
             
             let navItems = [
-                { type: 'tab', name: 'Works', id: 'dot-Works' },
-                { type: 'tab', name: 'Contact', id: 'dot-Contact' },
-                { type: 'tab', name: 'Text', id: 'dot-Text' },
-                { type: 'tab', name: 'Collaborative projects', id: 'dot-Collaborative-projects' }
+                ...tabs.map(t => ({ type: 'tab', name: t, id: `dot-${t}` })),
+                ...workKeys.map((key, idx) => ({ type: 'work', key: key, num: idx + 1, id: `work-${key}` }))
             ];
 
             let placedCoordinates = [];
@@ -952,114 +932,20 @@
 
                 placedCoordinates.push({ x: posX, y: posY });
 
-                el.className = 'dot';
-                el.id = item.id;
-                el.style.top = posY + 'px';
-                el.style.right = posX + 'px';
-                if (item.name === activeTabName) {
-                    el.classList.add('active');
+                if (item.type === 'tab') {
+                    el.className = 'dot';
+                    el.id = item.id;
+                    el.style.top = posY + 'px';
+                    el.style.right = posX + 'px';
+                    el.onclick = () => activateTab(item.name);
+                } else {
+                    el.className = 'work-trigger trigger';
+                    el.id = item.id;
+                    el.style.top = posY + 'px';
+                    el.style.right = posX + 'px';
+                    el.textContent = item.num;
+                    el.onclick = () => showWork(item.key);
                 }
-                el.onclick = () => activateTab(item.name);
-                container.appendChild(el);
-            });
-
-            const thankYouBox = document.createElement('div');
-            thankYouBox.id = 'thank-you-note';
-            container.appendChild(thankYouBox);
-        }
-
-        function initializeWorksNavigation(activeWorkKey = null) {
-            container.innerHTML = '';
-            
-            let workItems = workKeys.map((key, idx) => ({ type: 'work', key: key, num: idx + 1, id: `work-${key}` }));
-            let placedCoordinates = [];
-            
-            workItems.forEach((item) => {
-                const el = document.createElement('div');
-                let posX, posY, overlapping;
-                let attempts = 0;
-
-                do {
-                    overlapping = false;
-                    posX = Math.random() * (window.innerWidth * 0.15 - 40) + 10;
-                    posY = Math.random() * (window.innerHeight - 180) + 40;
-
-                    for (let p of placedCoordinates) {
-                        let dx = p.x - posX;
-                        let dy = p.y - posY;
-                        let distance = Math.sqrt(dx * dx + dy * dy);
-                        if (distance < 50) {
-                            overlapping = true;
-                            break;
-                        }
-                    }
-                    attempts++;
-                } while (overlapping && attempts < 50);
-
-                placedCoordinates.push({ x: posX, y: posY });
-
-                el.className = 'work-trigger trigger visible';
-                el.id = item.id;
-                el.style.top = posY + 'px';
-                el.style.right = posX + 'px';
-                el.textContent = item.num;
-                if (item.key === activeWorkKey) {
-                    el.classList.add('active');
-                }
-                el.onclick = () => showWork(item.key);
-                container.appendChild(el);
-            });
-
-            const thankYouBox = document.createElement('div');
-            thankYouBox.id = 'thank-you-note';
-            container.appendChild(thankYouBox);
-        }
-
-        function initializeCollabNavigation(activeCollabKey = null) {
-            container.innerHTML = '';
-            
-            let collabItems = [
-                { key: 'troue', label: 'Le bazar tr<span class="filled-o">o</span>ué' },
-                { key: 'braida', label: 'Sonnambula' },
-                { key: 'rotte', label: 'Alle rotte takken' }
-            ];
-
-            let placedCoordinates = [];
-
-            collabItems.forEach((item) => {
-                const el = document.createElement('div');
-                let posX, posY, overlapping;
-                let attempts = 0;
-
-                do {
-                    overlapping = false;
-                    posX = Math.random() * (window.innerWidth * 0.15 - 80) + 10;
-                    posY = Math.random() * (window.innerHeight - 180) + 40;
-
-                    for (let p of placedCoordinates) {
-                        let dx = p.x - posX;
-                        let dy = p.y - posY;
-                        let distance = Math.sqrt(dx * dx + dy * dy);
-                        if (distance < 60) {
-                            overlapping = true;
-                            break;
-                        }
-                    }
-                    attempts++;
-                } while (overlapping && attempts < 50);
-
-                placedCoordinates.push({ x: posX, y: posY });
-
-                el.className = 'collab-trigger trigger visible';
-                if (item.key === activeCollabKey) {
-                    el.classList.add('active');
-                }
-                el.id = `collab-${item.key}`;
-                el.style.top = posY + 'px';
-                el.style.right = posX + 'px';
-                el.innerHTML = item.label;
-                el.onclick = () => showCollab(item.key);
-                
                 container.appendChild(el);
             });
 
@@ -1070,6 +956,17 @@
 
         function activateTab(tabName, subTabToOpen = null, subSubTabToOpen = null) {
             closeTextViewer();
+
+            document.querySelectorAll('.dot').forEach(d => {
+                if(d.id !== 'entry-dot') d.classList.remove('active');
+            });
+            const dot = document.getElementById(`dot-${tabName}`);
+            if (dot) dot.classList.add('active');
+
+            document.querySelectorAll('.work-trigger').forEach(wt => {
+                if (tabName === 'Works') wt.classList.add('visible');
+                else wt.classList.remove('visible');
+            });
 
             if (subTabToOpen !== 'residus') {
                 handleResidusAudio(false);
@@ -1088,7 +985,6 @@
             display.innerHTML = '';
             
             if (tabName === 'Contact') {
-                initializeMainNavigation('Contact');
                 display.innerHTML = `
                     <div class="blue-text">
                         <div>Clémence Ledent</div><div>°2000, Brussels</div>
@@ -1099,7 +995,6 @@
                         <p>The concept of ‘presence in absence’ is central to her work. By underlining the subtle sounds embedded in our daily gestures, or by deconstructing those gestures into singular happenings, Ledent shifts the spectator into an almost voyeuristic position toward how we carry ourselves. What appears playful or absurd ultimately reveals the orchestrated fragility of how we live with and alongside one another.</p>
                     </div>`;
             } else if (tabName === 'Works') {
-                initializeWorksNavigation(autoOpenSub);
                 display.innerHTML = `<div id="content-area"></div>`;
                 if(autoOpenSub) {
                     showWork(autoOpenSub);
@@ -1107,8 +1002,12 @@
                     document.getElementById('content-area').innerHTML = '';
                 }
             } else if (tabName === 'Collaborative projects') {
-                initializeCollabNavigation(autoOpenSub);
-                display.innerHTML = `<div id="content-area"></div>`;
+                display.innerHTML = `
+                    <div class="works-nav">
+                        <span class="collab-trigger trigger" id="collab-troue" onclick="showCollab('troue')">Le bazar tr<span class="filled-o">o</span>ué</span>
+                        <span class="collab-trigger trigger" id="collab-braida" onclick="showCollab('braida')">Sonnambula</span>
+                        <span class="collab-trigger trigger" id="collab-rotte" onclick="showCollab('rotte')">Alle rotte takken</span>
+                    </div><div id="content-area"></div>`;
                 if(autoOpenSub) {
                     if(autoOpenSub === 'braida' || autoOpenSub === 'rotte') {
                         showCollab(autoOpenSub, autoOpenSubSub || (autoOpenSub === 'rotte' ? '1' : '2026'));
@@ -1119,7 +1018,6 @@
                     showCollab('troue');
                 }
             } else if (tabName === 'Text') {
-                initializeMainNavigation('Text');
                 display.innerHTML = `
                     <div class="subnav-container">
                         <span class="trigger" onclick="openTextViewer('rigiditeit')">Het rigiditeitsgehalte van een tafelgebeuren</span>
@@ -1133,11 +1031,22 @@
 
         function showWork(key) {
             closeTextViewer();
-            initializeWorksNavigation(key);
+
+            document.querySelectorAll('.dot').forEach(d => {
+                if(d.id !== 'entry-dot') d.classList.remove('active');
+            });
+            const workDot = document.getElementById('dot-Works');
+            if (workDot) workDot.classList.add('active');
+
+            document.querySelectorAll('.work-trigger').forEach(wt => wt.classList.add('visible'));
 
             if (!document.getElementById('content-area')) {
                 display.innerHTML = `<div id="content-area"></div>`;
             }
+
+            document.querySelectorAll('.work-trigger').forEach(t => t.classList.remove('active'));
+            const el = document.getElementById('work-' + key);
+            if(el) el.classList.add('active');
 
             if (key === 'residus') {
                 handleResidusAudio(true);
@@ -1163,7 +1072,9 @@
 
         function showCollab(key, subKey = null) {
             setThankYouNote(null);
-            initializeCollabNavigation(key);
+            document.querySelectorAll('.collab-trigger').forEach(t => t.classList.remove('active'));
+            const el = document.getElementById('collab-' + key);
+            if(el) el.classList.add('active');
 
             currentCollabState.key = key;
             currentCollabState.subKey = subKey;
@@ -1205,8 +1116,8 @@
         entryDot.onclick = function() {
             if (!this.classList.contains('transformed')) {
                 this.classList.add('transformed');
-                initializeMainNavigation();
-                activateTab('Works');
+                initializeNavigation();
+                parseHashAndNavigate();
             }
         };
 
@@ -1214,14 +1125,10 @@
             const hash = window.location.hash.substring(1);
             if (!hash) return;
 
-            entryDot.classList.add('transformed');
-
             if (hash === 'contact') {
                 activateTab('Contact');
             } else if (hash === 'works') {
-                activateTab('Works', workKeys[0]);
-            } else if (workKeys.includes(hash)) {
-                activateTab('Works', hash);
+                activateTab('Works');
             } else if (hash.startsWith('works-')) {
                 const sub = hash.replace('works-', '');
                 let workKey = sub;
@@ -1231,7 +1138,7 @@
                 }
                 activateTab('Works', workKey);
             } else if (hash === 'collaborative-projects' || hash === 'collaborative' || hash === 'collab') {
-                activateTab('Collaborative projects', 'troue');
+                activateTab('Collaborative projects');
             } else if (hash.startsWith('collaborative-projects-') || hash.startsWith('collab-')) {
                 const parts = hash.replace('collaborative-projects-', '').replace('collab-', '').split('-');
                 activateTab('Collaborative projects', parts[0], parts[1]);
@@ -1242,6 +1149,8 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             if (window.location.hash) {
+                entryDot.classList.add('transformed');
+                initializeNavigation();
                 parseHashAndNavigate();
             }
         });
