@@ -38,21 +38,22 @@
             transition: background 0.3s, border-color 0.3s;
         }
 
-        /* Bovenste stip: wit met zwarte rand en nummer 2 */
+        /* Bovenste stip: 2x zo groot (64px) en hoger geplaatst */
         .dot-numbered {
-            width: 32px;
-            height: 32px;
+            width: 64px;
+            height: 64px;
             border-radius: 50%;
             background: #fff;
-            border: 1.8px solid #000;
+            border: 3.6px solid #000;
             box-sizing: border-box;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 14px;
+            font-size: 28px;
             font-weight: bold;
             color: #000;
             user-select: none;
+            margin-bottom: 20px; /* Duwt de stip hoger op t.o.v. de rest */
         }
 
         /* Actieve status: wit met blauwe omlijning */
@@ -136,5 +137,3 @@
     </script>
 </body>
 </html>
-
-```
