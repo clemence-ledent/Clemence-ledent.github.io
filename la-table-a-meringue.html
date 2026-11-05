@@ -1,3 +1,6 @@
+Here is the updated code. A new dot with class `dot-numbered` has been added directly above the interactive player dot inside `#player-container`. It shares the same 32px dimensions, features a white background, black outline, and displays the number "2" centered within it.
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -38,6 +41,23 @@
             transition: background 0.3s, border-color 0.3s;
         }
 
+        /* Bovenste stip: wit met zwarte rand en nummer 2 */
+        .dot-numbered {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #fff;
+            border: 1.8px solid #000;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+            color: #000;
+            user-select: none;
+        }
+
         /* Actieve status: wit met blauwe omlijning */
         .dot.active {
             background: #fff;
@@ -57,6 +77,9 @@
 <body>
 
     <div id="player-container">
+        <!-- Stip boven de player stip -->
+        <div class="dot-numbered">2</div>
+
         <!-- De centrale interactieve stip -->
         <div class="dot" id="central-dot" onclick="toggleAudio()" title="Play/Pause"></div>
         
@@ -116,3 +139,5 @@
     </script>
 </body>
 </html>
+
+```
