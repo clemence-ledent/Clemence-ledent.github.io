@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Personal Drive</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Helvetica Neue", Arial, sans-serif;
+      background-color: #ffffff;
+      color: #000000;
+      height: 100vh;
+      display: flex;
+      overflow: hidden;
+    }
+    
+    /* Lock Screen Modal */
+    #auth-overlay {
+      position: fixed;
+      inset: 0;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+    #auth-overlay input {
+      font-family: inherit;
+      padding: 10px 14px;
+      font-size: 14px;
+      border: 1px solid #000000;
+      outline: none;
+      width: 280px;
+      margin-top: 12px;
+      margin-bottom: 12px;
+    }
+    #auth-overlay button {
+      font-family: inherit;
+      background: #000000;
+      color: #ffffff;
+      border: none;
+      padding: 10px 24px;
+      font-size: 14px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    /* Sidebar */
+    sidebar {
+      width: 260px;
+      border-right: 1px solid #000000;
+      display: flex;
+      flex-direction: column;
+      background: #ffffff;
+    }
+    .brand {
+      padding: 20px;
+      font-size: 16px;
+      font-weight: bold;
+      border-bottom: 1px solid #000000;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .action-bar {
+      padding: 15px;
+      display: flex;
+      gap: 8px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    .btn {
+      font-family: inherit;
+      background: #ffffff;
+      color: #000000;
+      border: 1px solid #000000;
+      padding: 8px 12px;
+      font-size: 12px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .btn:hover { background: #000000; color: #ffffff; }
+    .file-list {
+      flex: 1;
+      overflow-y: auto;
+      list-style: none;
+    }
+    .file-item {
+      padding: 12px 20px;
+      font-size: 13px;
+      border-bottom: 1px solid #f0f0f0;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .file-item.active {
+      font-weight: bold;
+      background: #000000;
+      color: #ffffff;
+    }
+    .sidebar-footer {
+      padding: 15px;
+      border-top: 1px solid #000000;
+    }
+
+    /* Main Content Area */
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .top-bar {
+      padding: 15px 20px;
+      border-bottom: 1px solid #000000;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    .filename-input {
+      font-family: inherit;
+      font-size: 16px;
+      font-weight: bold;
+      border: none;
+      outline: none;
+      flex: 1;
+    }
+    .toolbar {
+      padding: 10px 20px;
+      border-bottom: 1px solid #e0e0e0;
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .tool-btn {
+      font-family: inherit;
+      background: #ffffff;
+      color: #000000;
+      border: 1px solid #000000;
+      width: 28px;
+      height: 28px;
+      font-size: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .tool-btn:hover { background: #000000; color: #ffffff; }
+    .editor {
+      flex: 1;
+      padding: 30px;
+      outline: none;
+      font-size: 15px;
+      line-height: 1.6;
+      overflow-y: auto;
+    }
+    .status-msg {
+      font-size: 12px;
+      font-weight: normal;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Auth Overlay -->
+  <div id="auth-overlay">
+    <h2 style="font-size: 18px; font-weight: bold;">PERSONAL DRIVE</h2>
+    <p style="font-size: 13px; margin-top: 8px; color: #444;">Enter your GitHub Token to access your repository files.</p>
+    <input type="password" id="token-input" placeholder="ghp_..." />
+    <button onclick="saveToken()">ACCESS DRIVE</button>
+  </div>
+
+  <!-- Sidebar -->
+  <sidebar>
+    <div class="brand">
+      <span>FILES</span>
+      <span id="sync-indicator" style="font-size: 10px; font-weight: normal;">● ONLINE</span>
+    </div>
+    <div class="action-bar">
+      <button class="btn" style="flex: 1;" onclick="createNewFile()">+ NEW FILE</button>
+      <button class="btn" onclick="fetchFilesFromRepo()">↻ REFRESH</button>
+    </div>
+    <ul class="file-list" id="file-list"></ul>
+    <div class="sidebar-footer">
+      <button class="btn" style="width: 100%;" onclick="clearToken()">LOGOUT / KEY</button>
+    </div>
+  </sidebar>
+
+  <!-- Editor Main -->
+  <main>
+    <div class="top-bar">
+      <input type="text" id="current-filename" class="filename-input" value="untitled.txt" placeholder="File name..." />
+      <span class="status-msg" id="status-msg"></span>
+      <button class="btn" onclick="saveCurrentFileToRepo()">SAVE TO REPO</button>
+      <button class="btn" style="border-color: #cc0000; color: #cc0000;" onclick="deleteFileFromRepo()">DELETE</button>
+    </div>
+
+    <div class="toolbar">
+      <button class="tool-btn" onclick="execCmd('bold')" title="Bold"><b>B</b></button>
+      <button class="tool-btn" onclick="execCmd('italic')" title="Italic"><i>I</i></button>
+      <button class="tool-btn" onclick="execCmd('underline')" title="Underline"><u>U</u></button>
+      <button class="tool-btn" onclick="execCmd('hiliteColor', '#ffff00')" title="Highlight">H</button>
+      <button class="tool-btn" onclick="execCmd('removeFormat')" title="Clear formatting">✕</button>
+    </div>
+
+    <div class="editor" id="editor" contenteditable="true"></div>
+  </main>
+
+  <script>
+    // USER CONFIGURATION (Change these to match your GitHub details)
+    const REPO_OWNER = "clemence-ledent";
+    const REPO_NAME = "clemence-ledent.github.io"; // or your specific repo name
+    const FOLDER_PATH = "my-docs"; // subfolder where your files will be stored
+
+    let GITHUB_TOKEN = localStorage.getItem("gh_pat_token") || "";
+    let currentFiles = {};
+    let activeFilename = "";
+
+    window.onload = function() {
+      if (GITHUB_TOKEN) {
+        document.getElementById("auth-overlay").style.display = "none";
+        fetchFilesFromRepo();
+      }
+    };
+
+    function saveToken() {
+      const val = document.getElementById("token-input").value.trim();
+      if (val) {
+        GITHUB_TOKEN = val;
+        localStorage.setItem("gh_pat_token", val);
+        document.getElementById("auth-overlay").style.display = "none";
+        fetchFilesFromRepo();
+      }
+    }
+
+    function clearToken() {
+      localStorage.removeItem("gh_pat_token");
+      location.reload();
+    }
+
+    function showStatus(text) {
+      document.getElementById("status-msg").innerText = text;
+    }
+
+    // API: Fetch files from Github Repo
+    async function fetchFilesFromRepo() {
+      showStatus("Fetching files...");
+      try {
+        const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FOLDER_PATH}`, {
+          headers: { "Authorization": `Bearer ${GITHUB_TOKEN}` }
+        });
+
+        if (res.status === 404) {
+          // Folder doesn't exist yet
+          currentFiles = {};
+          renderSidebar();
+          showStatus("Drive ready (no files yet).");
+          return;
+        }
+
+        if (!res.ok) throw new Error("Auth failed or network error");
+
+        const filesData = await res.json();
+        currentFiles = {};
+        
+        for (let file of filesData) {
+          if (file.type === "file") {
+            currentFiles[file.name] = { sha: file.sha, download_url: file.download_url, content: null };
+          }
+        }
+
+        renderSidebar();
+        showStatus("Synced.");
+      } catch (err) {
+        showStatus("Error loading files. Check token.");
+      }
+    }
+
+    function renderSidebar() {
+      const listEl = document.getElementById("file-list");
+      listEl.innerHTML = "";
+
+      Object.keys(currentFiles).forEach(fname => {
+        const li = document.createElement("li");
+        li.className = `file-item ${fname === activeFilename ? 'active' : ''}`;
+        li.innerText = fname;
+        li.onclick = () => loadFile(fname);
+        listEl.appendChild(li);
+      });
+    }
+
+    async function loadFile(fname) {
+      activeFilename = fname;
+      document.getElementById("current-filename").value = fname;
+      renderSidebar();
+      showStatus(`Loading ${fname}...`);
+
+      try {
+        const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FOLDER_PATH}/${fname}`, {
+          headers: { "Authorization": `Bearer ${GITHUB_TOKEN}` }
+        });
+        const data = await res.json();
+        
+        // Decode UTF-8 Base64 content
+        const content = decodeURIComponent(escape(atob(data.content)));
+        currentFiles[fname].sha = data.sha;
+        currentFiles[fname].content = content;
+
+        document.getElementById("editor").innerHTML = content;
+        showStatus("Loaded.");
+      } catch (err) {
+        showStatus("Failed to open file.");
+      }
+    }
+
+    function createNewFile() {
+      activeFilename = `note-${Date.now().toString().slice(-4)}.html`;
+      document.getElementById("current-filename").value = activeFilename;
+      document.getElementById("editor").innerHTML = "";
+      renderSidebar();
+      showStatus("New file started.");
+    }
+
+    // API: Save / Commit file to Github Repo
+    async function saveCurrentFileToRepo() {
+      const fname = document.getElementById("current-filename").value.trim();
+      if (!fname) return alert("Please specify a file name.");
+
+      const htmlContent = document.getElementById("editor").innerHTML;
+      
+      // Encode content to Base64 (UTF-8 safe)
+      const base64Content = btoa(unescape(encodeURIComponent(htmlContent)));
+
+      showStatus("Saving to GitHub...");
+
+      const bodyData = {
+        message: `Update ${fname} via Personal Drive`,
+        content: base64Content
+      };
+
+      // Include SHA if updating existing file
+      if (currentFiles[fname] && currentFiles[fname].sha) {
+        bodyData.sha = currentFiles[fname].sha;
+      }
+
+      try {
+        const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FOLDER_PATH}/${fname}`, {
+          method: "PUT",
+          headers: {
+            "Authorization": `Bearer ${GITHUB_TOKEN}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(bodyData)
+        });
+
+        if (!res.ok) throw new Error("Save failed");
+
+        const resData = await res.json();
+        currentFiles[fname] = {
+          sha: resData.content.sha,
+          download_url: resData.content.download_url,
+          content: htmlContent
+        };
+
+        activeFilename = fname;
+        renderSidebar();
+        showStatus("Saved to GitHub repository!");
+      } catch (err) {
+        showStatus("Save error. Check console/token.");
+      }
+    }
+
+    // API: Delete file from Repo
+    async function deleteFileFromRepo() {
+      if (!activeFilename || !currentFiles[activeFilename]) return;
+      if (!confirm(`Delete ${activeFilename} from your repository?`)) return;
+
+      showStatus("Deleting...");
+
+      try {
+        const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FOLDER_PATH}/${activeFilename}`, {
+          method: "DELETE",
+          headers: {
+            "Authorization": `Bearer ${GITHUB_TOKEN}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            message: `Delete ${activeFilename}`,
+            sha: currentFiles[activeFilename].sha
+          })
+        });
+
+        if (!res.ok) throw new Error("Delete failed");
+
+        delete currentFiles[activeFilename];
+        createNewFile();
+        fetchFilesFromRepo();
+        showStatus("File deleted.");
+      } catch (err) {
+        showStatus("Delete error.");
+      }
+    }
+
+    function execCmd(command, value = null) {
+      document.execCommand(command, false, value);
+    }
+  </script>
+</body>
+</html>
